@@ -1,6 +1,7 @@
 import React from 'react'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import SignUp from './routes/SignUp';
+import VideoRecord from './routes/VideoRecord';
 import VoiceRecord from './routes/VoiceRecord';
 
 
@@ -11,6 +12,7 @@ class App extends React.Component {
       <Routes>
         <Route path='/signup' element={<SignUp ></SignUp>}></Route>
         <Route path='/voice' element={<VoiceRecord></VoiceRecord>}></Route>
+        <Route path='/video' element={<VideoRecord />}></Route>
       </Routes>
     </BrowserRouter>
     )

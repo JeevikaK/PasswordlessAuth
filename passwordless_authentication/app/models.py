@@ -9,3 +9,11 @@ class SignUp(models.Model):
 
     def _str_(self):
         return self.username
+
+
+class Audio(models.Model):
+    audio_file = models.BinaryField(null=True, blank=True)
+    name = models.CharField(max_length=255)
+    
+    def _str_(self):
+        return self.name

@@ -46,6 +46,7 @@ const VoiceRcordComponent = () => {
         }
       };
     }, [recorder]);
+    
   
     return (
       <div>
