@@ -21,15 +21,3 @@ class SignUpView(APIView):
         for detail in SignUp.objects.all()]
         return Response(detail)
 
-
-class VoiceRecordView(APIView):
-
-    serializer_class = VoiceRecordSerializer
-
-    # def get(self, request, name):
-    #     audio = Audio.objects.get(name=name)
-    #     return audio.audio_file
-
-    def post(audio_data, name):
-        audio = Audio(name=name, audio_file=audio_data)
-        audio.save()

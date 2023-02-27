@@ -6,7 +6,3 @@ class ReactSerializer(serializers.ModelSerializer):
         model = SignUp
         fields = ['username', 'biometric_option', 'fido_option', 'blockchain_auth']
 
-class VoiceRecordSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Audio
-        fields = ['audio_file', 'name']
