@@ -1,8 +1,9 @@
 from django.contrib import admin
-from . models import SignUp
+from . models import Applications
 
 # Register your models here.
-class SignUpAdmin(admin.ModelAdmin):
-    lis = ('username', 'biometric_option', 'fido_option', 'blockchain_auth')
 
-admin.site.register(SignUp, SignUpAdmin)
+class ApplicationsAdmin(admin.ModelAdmin):
+    list_display = ('app_id', 'app_name', 'app_secret', 'redirection_url')
+
+admin.site.register(Applications, ApplicationsAdmin)

@@ -15,10 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers 
+# from rest_framework import routers 
 from app.views import *
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('signup/', SignUpView.as_view(), name="signup"),
+    path('api/register_app',Register_app.as_view(), name="register_app"),
+    path('api/authenticate_app', Authenticate_app.as_view(), name="Authenticate_app"),
 ]
+
+#checking if user exists first
+#face authentication adding image to db
+#voice authentication adding voice to db
