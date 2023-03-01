@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios'
 
 const VoiceRcordComponent = () => {
 
@@ -34,6 +35,25 @@ const VoiceRcordComponent = () => {
       setAudioBlob(event.data);
       setAudioUrl(URL.createObjectURL(event.data));
     };
+    
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      const blobData = new Blob([audioBlob]);
+      console.log(blobData)
+      const formData = new FormData();
+      formData.append('audio_file', blobData);
+      console.log(formData)
+      axios.post('http://127.0.0.1:8000/signup/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      })
+      .then((response) => console.log("im working"))
+      .catch((err) => {console.log(err)
+        console.log('err')
+        console.log(formData)
+        console.log(audioBlob)})
+    };
   
     useEffect(() => {
       if (recorder) {
@@ -49,24 +69,27 @@ const VoiceRcordComponent = () => {
     
   
     return (
-      <div>
-        {audioUrl && (
-          <div>
-            <audio src={audioUrl} controls />
-          </div>
-        )}
-        {!audioUrl && (
-          <button onClick={startRecording} disabled={isRecording}>
-            {isRecording ? 'Recording...' : 'Start Recording'}
-          </button>
-        )}
-        {isRecording && (
-          <button onClick={stopRecording}>Stop Recording</button>
-        )}
-        {audioUrl && (
-          <button onClick={recordAgain}>Record Again</button>
-        )}
-      </div>
+      <body>
+        <form method='POST' onSubmit={handleSubmit}>
+          {audioUrl && (
+            <div>
+              <audio src={audioUrl} controls />
+            </div>
+          )}
+          {!audioUrl && (
+            <button onClick={startRecording} disabled={isRecording}>
+              {isRecording ? 'Recording...' : 'Start Recording'}
+            </button>
+          )}
+          {isRecording && (
+            <button onClick={stopRecording}>Stop Recording</button>
+          )}
+          {audioUrl && (
+            <button onClick={recordAgain}>Record Again</button>
+          )}
+          <button type='submit'>Save</button>
+        </form>
+      </body>
     );
   }
  
