@@ -1,4 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react'
+import AppNameComponent from './AppNameComponent';
 
 const LoginComponent = () => {
 
@@ -12,16 +15,31 @@ const LoginComponent = () => {
         navigate('/video');
     }
 
+    window.$appid = useParams()
+
+    const link = 'http://127.0.0.1:8000/api/get_app/'.concat(window.$appid.id)
+    console.log(link)
+
+    useEffect(() => {
+        axios.get(link)
+        .then((res) => {
+            window.$appname = res.data.app_name
+            console.log(window.$appname)
+        })
+        .catch((err) => console.log(err))
+    })
+
     return ( 
 
-        <div className="h-screen bg-black from-gray-100 to-gray-300">
+        <div className="h-screen bg-black overflow-auto">
+            <AppNameComponent />
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-                {/* <a href="#" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"></a> */}
-                <div className="w-full bg-gray-800 rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+                <div className="w-full bg-gray-800 mt-10 rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-5">
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-400 md:text-2xl dark:text-white">
                             Login into your account
                         </h1>
+                        <h6 className="text-xl font-bold leading-tight tracking-tight text-gray-400 md:text-xl dark:text-white">{ window.$appname }</h6>
                         <form className="space-y-4 md:space-y-6" action="#">
                             <div>
                                 <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-200 dark:text-white py-3">Username</label>
@@ -54,7 +72,7 @@ const LoginComponent = () => {
                                         data-te-ripple-init
                                         data-te-ripple-color="light"
                                         className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
-                                        Click to Verify!
+                                        Authenticate
                                     </button>
                                 </div>
                                 <p className="text-sm font-medium text-gray-200 pb-3">FIDO Verification</p>
@@ -64,11 +82,11 @@ const LoginComponent = () => {
                                         data-te-ripple-init
                                         data-te-ripple-color="light"
                                         className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
-                                        Click to Verify!
+                                        Authenticate
                                     </button>
                                 </div>
                             </div>
-                            <button type="submit" className="w-full text-white bg-neutral-800 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign in</button>
+                            {/* <button type="submit" className="w-full text-white bg-neutral-800 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign in</button> */}
                             <p className="text-sm font-light text-gray-200 dark:text-gray-400">
                                 Don’t have an account yet? <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
                             </p>

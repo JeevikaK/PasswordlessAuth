@@ -12,7 +12,7 @@ class App extends React.Component {
       <BrowserRouter>
       <Routes>
         <Route path='/signup' element={<SignUp ></SignUp>}></Route>
-        <Route path='/login' element={<LoginRoute />}></Route>
+        <Route path='/login/:id' element={<LoginRoute />}></Route>
         <Route path='/voice' element={<VoiceRecord></VoiceRecord>}></Route>
         <Route path='/video' element={<VideoRecord />}></Route>
       </Routes>
