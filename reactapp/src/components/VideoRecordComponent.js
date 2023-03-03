@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import AppNameComponent from './AppNameComponent';
 
 function Camera() {
   const videoRef = useRef(null);
@@ -32,7 +33,8 @@ function Camera() {
 
   return (
     <div className="h-screen bg-black overflow-auto">
-      <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-4xl dark:text-white'>Register your Face</h1>
+      <AppNameComponent />
+      <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-3xl dark:text-white'>Register your Face</h1>
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
         <div className='bg-gray-800 p-5 mt-8'>
         <form className='flex flex-col items-center justify-center'>

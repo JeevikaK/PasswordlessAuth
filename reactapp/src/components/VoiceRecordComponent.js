@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios'
+import AppNameComponent from './AppNameComponent';
 
 const VoiceRcordComponent = () => {
 
@@ -70,7 +71,8 @@ const VoiceRcordComponent = () => {
   
     return (
       <div className='h-screen bg-black'>
-        <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-20 md:text-4xl dark:text-white'>Register your Voice</h1>
+        <AppNameComponent />
+        <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-20 md:text-3xl dark:text-white'>Register your Voice</h1>
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
           <div className="w-5/6 h-60 bg-gray-800 p-2 rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-center items-center">
           <form method='POST' className='p-3 flex flex-col justify-center items-center' onSubmit={handleSubmit}>

@@ -4,8 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-window.$appid = ""
-window.$appname = ""
+window.appid = ""
+window.appname = ""
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
