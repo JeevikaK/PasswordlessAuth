@@ -29,21 +29,20 @@ const LoginComponent = () => {
     }
 
     function videoHandleClick() {
-        let link = '/'.concat(window.appid).concat('/').concat(state).concat('/video')
-        navigate(link);
+        let link1 = '/'.concat(window.appid).concat('/').concat(state).concat('/video')
+        navigate(link1);
     }
 
-    function handleSubmit(e){
-        voiceHandleClick()
+    function handleSubmitVoice(e){
         e.preventDefault()
+        voiceHandleClick()
+        localStorage.setItem('username', username)
+    }
 
-        axios.post('http://127.0.0.1:8000/api/signup-voice-auth',username, {
-            headers : {
-                'Content-Type': 'multipart/form-data'
-            }
-        })
-        .then((res) => console.log(res))
-        .catch((err)=> console.log(err))
+    function handleSubmitVideo(e){
+        e.preventDefault()
+        videoHandleClick()
+        localStorage.setItem('username', username)
     }
 
     useEffect(() => {
@@ -83,6 +82,7 @@ const LoginComponent = () => {
                                 <div className="flex justify-center space-x-2">
                                     <button
                                         type="submit"
+                                        onClick={handleSubmitVideo}
                                         data-te-ripple-init
                                         data-te-ripple-color="light"
                                         className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-300 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
@@ -90,7 +90,7 @@ const LoginComponent = () => {
                                     </button>
                                     <button
                                         type="submit"
-                                        onClick={handleSubmit}
+                                        onClick={handleSubmitVoice}
                                         data-te-ripple-init
                                         data-te-ripple-color="light"
                                         className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-300 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
@@ -120,9 +120,12 @@ const LoginComponent = () => {
                                 </div>
                             </div>
                             {/* <button type="submit" className="w-full text-white bg-neutral-800 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign in</button> */}
-                            <p className="text-sm font-light text-gray-200 dark:text-gray-400">
-                                Don’t have an account yet? <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
-                            </p>
+                            {login && <p className="text-sm font-light text-gray-200 dark:text-gray-400">
+                                Don’t have an account yet? <a href={'/'+window.appid+'/signup'} className="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
+                            </p>}
+                            {signup && <p className="text-sm font-light text-gray-200 dark:text-gray-400">
+                                Have an account already? <a href={'/'+window.appid+'/login'} className="font-medium text-primary-600 hover:underline dark:text-primary-500">Login</a>
+                            </p>}
                         </form>
                     </div>
                 </div>

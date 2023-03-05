@@ -5,13 +5,12 @@ import SignUp from './routes/SignUp';
 import VideoRecord from './routes/VideoRecord';
 import VoiceRecord from './routes/VoiceRecord';
 
-
 class App extends React.Component {
   render(){
     return(
       <BrowserRouter>
       <Routes>
-        <Route path='/signup' element={<SignUp ></SignUp>}></Route>
+        {/* <Route path='/signup' element={<SignUp ></SignUp>}></Route> */}
         <Route path=':id/:state' element={<LoginRoute />}></Route>
         <Route path=':id/:state/voice' element={<VoiceRecord></VoiceRecord>}></Route>
         <Route path=':id/:state/video' element={<VideoRecord />}></Route>
