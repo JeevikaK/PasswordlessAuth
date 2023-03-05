@@ -4,6 +4,7 @@ import LoginRoute from './routes/LoginRoute';
 import SignUp from './routes/SignUp';
 import VideoRecord from './routes/VideoRecord';
 import VoiceRecord from './routes/VoiceRecord';
+import RecoveryRoute from './routes/recoveryRoute';
 
 class App extends React.Component {
   render(){
@@ -14,6 +15,7 @@ class App extends React.Component {
         <Route path=':id/:state' element={<LoginRoute />}></Route>
         <Route path=':id/:state/voice' element={<VoiceRecord></VoiceRecord>}></Route>
         <Route path=':id/:state/video' element={<VideoRecord />}></Route>
+        <Route path='/recovery' element={<RecoveryRoute />}></Route>
       </Routes>
     </BrowserRouter>
     )

@@ -2,12 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AppNameComponent from './AppNameComponent';
 import default_image from '../other/camera.jpg'
+import axios from 'axios'
 
 function Camera() {
 
   const navigate = useNavigate();
 
   const videoRef = useRef(null);
+
+  const [id, setId] = useState('')
   const [photo, setPhoto] = useState(null);
   let [state, setState] = useState('')
   let [login, setLogin] = useState('')
@@ -21,6 +24,18 @@ function Camera() {
       if (state == 'signup')
           setSignup(true)
   })
+
+  useEffect(() => {
+    const link = 'http://127.0.0.1:8000/api/get_app/'.concat(window.appid)
+    console.log(link)
+    axios.get(link)
+    .then((res) => {
+        window.appname = res.data.app_name
+        console.log(window.appname)
+        setId(window.appname)
+    })
+    .catch((err) => console.log(err))
+  },[])
 
   const startCamera = async () => {
     try {
@@ -56,7 +71,8 @@ function Camera() {
   return (
     <div className="h-screen bg-black overflow-auto">
       <AppNameComponent />
-      {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 mb-8 pr-4 pt-4 pl-4 md:text-2xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
+      {login && <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>App : { id }</p>}
+      {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
       <div className="flex flex-col items-center justify-center items-center px-6 py-8 mx-auto lg:py-0">
         <div className='bg-gray-800 p-5 mt-8 rounded-xl mb-5'>
         {signup && <h1 className='text-xl text-center font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-3xl dark:text-white'>Register your Face</h1>}
@@ -72,14 +88,6 @@ function Camera() {
               className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-300 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
               Start Camera
             </button>
-            {/* <button 
-              onClick={stopCamera}
-              type="button"
-              data-te-ripple-init
-              data-te-ripple-color="light"
-              className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-300 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
-              Stop Camera
-            </button> */}
             <button
               onClick={takePhoto}
               type="button"

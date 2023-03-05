@@ -7,6 +7,7 @@ const VoiceRcordComponent = () => {
 
     const navigate = useNavigate();
 
+    const [id, setId] = useState('')
     const [recorder, setRecorder] = useState(null);
     const [audioBlob, setAudioBlob] = useState(null);
     const [audioUrl, setAudioUrl] = useState(null);
@@ -24,6 +25,19 @@ const VoiceRcordComponent = () => {
         if (state == 'signup')
             setSignup(true)
     })
+
+    useEffect(() => {
+      const link = 'http://127.0.0.1:8000/api/get_app/'.concat(window.appid)
+      console.log(link)
+      axios.get(link)
+      .then((res) => {
+          window.appname = res.data.app_name
+          console.log(window.appname)
+          setId(window.appname)
+      })
+      .catch((err) => console.log(err))
+    },[])
+
 
     useEffect(() => {
       navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
@@ -92,10 +106,10 @@ const VoiceRcordComponent = () => {
     return (
       <div className='h-screen bg-black overflow-auto'>
         <AppNameComponent />
-        {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 mb-8 pr-4 pt-4 pl-4 md:text-2xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
+        {login && <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>App : { id }</p>}
+        {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 mb-8 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
           <div className="w-[22em] h-[30em] bg-gray-800 p-2 mb-2 rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-center items-center">
-            {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 mb-8 pr-4 pt-4 pl-4 md:text-2xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
             {signup && <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-20 md:text-3xl dark:text-white'>Register your Voice</h1>}
             {login && <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-20 md:text-3xl dark:text-white'>Verify your Voice</h1>}
             <form method='POST' className='p-3 flex flex-col justify-center items-center' onSubmit={handleSubmit}>

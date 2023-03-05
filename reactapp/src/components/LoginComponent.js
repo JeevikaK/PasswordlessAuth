@@ -75,7 +75,7 @@ const LoginComponent = () => {
                         <form className="space-y-4 md:space-y-6" method='POST'>
                             <div>
                                 <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-200 dark:text-white py-3">Username</label>
-                                <input type="username" name="username" id="username" value={username} onChange={(e) => setUsername(e.target.value)} className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required=""></input>
+                                <input name="username" id="username" value={username} onChange={(e) => setUsername(e.target.value)} className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required=""></input>
                                 <p className='text-red-500 text-sm mt-2 hidden'>Please fill this field!</p>
                                 
                                 <p className="text-sm font-medium pt-7 pb-4 text-gray-200">Biometric Verification</p>
