@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
 import AppNameComponent from './AppNameComponent';
 
@@ -9,7 +10,20 @@ const VoiceRcordComponent = () => {
     const [audioUrl, setAudioUrl] = useState(null);
     const [isRecording, setIsRecording] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
+    let [state, setState] = useState('')
+    let [login, setLogin] = useState('')
+    let [signup, setSignup] = useState('')
   
+    window.appid = useParams().id
+    state = useParams().state
+    useEffect(() => {
+
+        if(state == 'login')
+            setLogin(true)
+        if (state == 'signup')
+            setSignup(true)
+    })
+
     useEffect(() => {
       navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
         setRecorder(new MediaRecorder(stream));
@@ -72,9 +86,11 @@ const VoiceRcordComponent = () => {
     return (
       <div className='h-screen bg-black'>
         <AppNameComponent />
-        <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-20 md:text-3xl dark:text-white'>Register your Voice</h1>
+        
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
-          <div className="w-5/6 h-60 bg-gray-800 p-2 rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-center items-center">
+          <div className="w-[22em] h-[30em] bg-gray-800 p-2 rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-center items-center">
+          {signup && <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-20 md:text-3xl dark:text-white'>Register your Voice</h1>}
+          {login && <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-20 md:text-3xl dark:text-white'>Verify your Voice</h1>}
           <form method='POST' className='p-3 flex flex-col justify-center items-center' onSubmit={handleSubmit}>
             {audioUrl && (
               <div>

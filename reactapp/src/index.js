@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 
 window.appid = ""
 window.appname = ""
+window.username = ""
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
