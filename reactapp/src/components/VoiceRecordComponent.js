@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
 import AppNameComponent from './AppNameComponent';
+import RecoveryComponent from './recoveryComponent';
 
 const VoiceRcordComponent = () => {
 
@@ -13,6 +14,7 @@ const VoiceRcordComponent = () => {
     const [audioUrl, setAudioUrl] = useState(null);
     const [isRecording, setIsRecording] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [showComponent, setShowComponent] = useState(false);
     let [state, setState] = useState('')
     let [login, setLogin] = useState('')
     let [signup, setSignup] = useState('')
@@ -48,6 +50,10 @@ const VoiceRcordComponent = () => {
     function goBack(){
       let link = '/'.concat(window.appid).concat('/').concat(state)
       navigate(link);
+    }
+
+    function recovery(){
+      setShowComponent(!showComponent);
     }
 
     const startRecording = () => {
@@ -155,14 +161,24 @@ const VoiceRcordComponent = () => {
               )}
             </form>
           </div>
-          <button type='button'
-            onClick={goBack}
-            data-te-ripple-init
-            data-te-ripple-color="light"
-            className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
-            Back
-        </button>
+          <div className='flex space-x-4'>
+            <button type='button'
+              onClick={goBack}
+              data-te-ripple-init
+              data-te-ripple-color="light"
+              className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
+              Back
+            </button>
+            <button type='button'
+              onClick={recovery}
+              data-te-ripple-init
+              data-te-ripple-color="light"
+              className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
+              Enter Recovery Details
+            </button>
+          </div>
         </div>
+        {showComponent && <RecoveryComponent />}
       </div>
       
     );

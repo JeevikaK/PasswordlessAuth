@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import AppNameComponent from './AppNameComponent';
 import default_image from '../other/camera.jpg'
 import axios from 'axios'
+import RecoveryComponent from './recoveryComponent';
 
 function Camera() {
 
@@ -15,6 +16,7 @@ function Camera() {
   let [state, setState] = useState('')
   let [login, setLogin] = useState('')
   let [signup, setSignup] = useState('')
+  const [showComponent, setShowComponent] = useState(false);
 
   window.appid = useParams().id
   state = useParams().state
@@ -24,6 +26,10 @@ function Camera() {
       if (state == 'signup')
           setSignup(true)
   })
+
+  function recovery(){
+    setShowComponent(!showComponent);
+  }
 
   useEffect(() => {
     const link = 'http://127.0.0.1:8000/api/get_app/'.concat(window.appid)
@@ -108,14 +114,24 @@ function Camera() {
           </button>}
         </form>
         </div>
-        <button type='button'
-            onClick={goBack}
+        <div className='flex space-x-4'>
+          <button type='button'
+              onClick={goBack}
+              data-te-ripple-init
+              data-te-ripple-color="light"
+              className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
+              Back
+          </button>
+          <button type='button'
+            onClick={recovery}
             data-te-ripple-init
             data-te-ripple-color="light"
             className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
-            Back
-        </button>
+            Enter Recovery Details
+          </button>
+        </div>
       </div>
+      {showComponent && <RecoveryComponent />}
     </div>
 
   );
