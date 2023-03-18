@@ -13,26 +13,20 @@ function Camera() {
 
   const [id, setId] = useState('')
   const [photo, setPhoto] = useState(null);
-  let [state, setState] = useState('')
-  let [login, setLogin] = useState('')
-  let [signup, setSignup] = useState('')
+  let [state, setState] = useState(useParams().state)
   const [showComponent, setShowComponent] = useState(false);
+  const [recMail, setRecMail] = useState('');
+  const [recPhone, setRecPhone] = useState('');
+  const [camOn, setCamOn] = useState(false);
 
   window.appid = useParams().id
-  state = useParams().state
-  useEffect(() => {
-      if(state == 'login')
-          setLogin(true)
-      if (state == 'signup')
-          setSignup(true)
-  })
 
   function recovery(){
-    setShowComponent(!showComponent);
+    setShowComponent(true);
   }
 
   useEffect(() => {
-    const link = 'http://127.0.0.1:8000/api/get_app/'.concat(window.appid)
+    const link = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)
     console.log(link)
     axios.get(link)
     .then((res) => {
@@ -47,6 +41,7 @@ function Camera() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       videoRef.current.srcObject = stream;
+      setCamOn(true);
     } catch (err) {
       console.error('Error accessing camera:', err);
     }
@@ -60,6 +55,9 @@ function Camera() {
   };
 
   const takePhoto = () => {
+    if(!camOn){
+      return 
+    }
     const canvas = document.createElement('canvas');
     canvas.width = videoRef.current.videoWidth;
     canvas.height = videoRef.current.videoHeight;
@@ -74,15 +72,17 @@ function Camera() {
     navigate(link);
   }
 
+  function handleSubmit(){}
+
   return (
     <div className="h-screen bg-black overflow-auto">
       <AppNameComponent />
-      {login && <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>App : { id }</p>}
+      {state=='login' && <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>{ id }</p>}
       {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
       <div className="flex flex-col items-center justify-center items-center px-6 py-8 mx-auto lg:py-0">
         <div className='bg-gray-800 p-5 mt-8 rounded-xl mb-5'>
-        {signup && <h1 className='text-xl text-center font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-3xl dark:text-white'>Register your Face</h1>}
-        {login && <h1 className='text-xl text-center font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-3xl dark:text-white'>Verify your Face</h1>}
+        {state=='signup' && <h1 className='text-xl text-center font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-3xl dark:text-white'>Register your Face</h1>}
+        {state=='login' && <h1 className='text-xl text-center font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-3xl dark:text-white'>Verify your Face</h1>}
         <form className='flex flex-col items-center justify-center'>
           <video ref={videoRef} poster={default_image} autoPlay style={{ width: '500px', height: '400px' }} />
           <div className='flex space-x-4'>
@@ -105,12 +105,12 @@ function Camera() {
           </div>
           {photo && <img src={photo} style={{ width: '300px', height: '250px' }} className='pt-5 pb-5' />}
           {photo && <button
-              onClick={takePhoto}
+              onClick={recovery}
               type="button"
               data-te-ripple-init
               data-te-ripple-color="light"
               className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-300 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
-              Save
+              Next
           </button>}
         </form>
         </div>
@@ -122,16 +122,9 @@ function Camera() {
               className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
               Back
           </button>
-          <button type='button'
-            onClick={recovery}
-            data-te-ripple-init
-            data-te-ripple-color="light"
-            className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
-            Enter Recovery Details
-          </button>
         </div>
       </div>
-      {showComponent && <RecoveryComponent />}
+      {showComponent && <RecoveryComponent submission = {handleSubmit} setRecMail={setRecMail} setRecPhone={setRecPhone}/>}
     </div>
 
   );

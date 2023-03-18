@@ -31,8 +31,8 @@ class User(models.Model):
     voice_auth = models.BooleanField(default=False)
     face_image = models.ImageField(upload_to=img_dir_path, default="")
     voice_image = models.FileField(upload_to=audio_dir_path, default="")
-    recovery_email = models.CharField(max_length=100, default=None)
-    recovery_phone_number = models.CharField(max_length=100, default=None)
+    recovery_email = models.CharField(max_length=100, default=None, null=True)
+    recovery_phone_number = models.CharField(max_length=100, default=None, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     
 
