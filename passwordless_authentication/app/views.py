@@ -6,7 +6,8 @@ from .serializer import *
 import uuid
 from secrets import *
 from rest_framework.parsers import FileUploadParser, MultiPartParser, FormParser
-
+from .voice_utils import *
+from django.core.files import File
 
 # Create your views here.
 
@@ -123,7 +124,10 @@ class Voice_auth_signup(APIView):
             user.save()
             return Response({"status": "success"})
         except User.DoesNotExist:
+            embedding = create_embedding(request.data.get("voice_image"))
+            save_embedding(embedding)
             request.data.update({"voice_auth": True})
+            request.data.update({"voice_image": File( open( 'media/registeredVoices/embedding.npy' ,'rb'))})
             serializer = UserSerializer(data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
@@ -138,12 +142,17 @@ class Voice_auth_login(APIView):
     def post(self, request):
         username = request.data.get("username")
         voice_image = request.data.get("voice_image")
-        print(request.data)
         try:
             user = User.objects.get(username=username)
-            if user.voice_image == voice_image:
-                return Response({"status": "success", **user})
+            if user.voice_auth:
+                user_ob = UserSerializer(user)
+                embedding_test = create_embedding(voice_image)
+                embedding_reg = load_embedding(user.username)
+                if verify(embedding_test, embedding_reg):
+                    return Response({"verified": True, **user_ob.data})
+                else:
+                    return Response({"verified": False})
             else:
-                return Response({"status": "failed"})
+                return Response({"verified": False})
         except User.DoesNotExist:
             return Response({"status": "NotExists"})

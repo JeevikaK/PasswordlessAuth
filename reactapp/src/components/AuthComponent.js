@@ -8,14 +8,14 @@ const AuthComponent = () => {
 
     const [appName, setAppName] = useState('')
     const [username, setUsername] = useState('')
-    let [state, setState] = useState(useParams().state)
+    const [state, setState] = useState(useParams().state)
     const navigate = useNavigate();
-    let [error, setError] = useState(false)
-    let [errorText, setErrorText] = useState('')
+    const [error, setError] = useState(false)
+    const [errorText, setErrorText] = useState('')
 
     window.appid = useParams().id
 
-    async function checkUser(username, state){
+    async function checkUser(username, state, authType){
         if (username === '') {
             setError(true)
             setErrorText('Please fill this field!')
@@ -31,6 +31,19 @@ const AuthComponent = () => {
                         setErrorText('Username does not exist!')
                         return false
                     }
+                    else{
+                        if(!response.data.voice_auth && authType === 'voice'){
+                            setError(true)
+                            setErrorText('Voice authentication is not enabled for this user!')
+                            return false
+                        }
+                        if(!response.data.face_auth && authType === 'face'){
+                            setError(true)
+                            setErrorText('Face authentication is not enabled for this user!')
+                            return false
+                        }
+                    }
+                
                     break
                 case 'signup':
                     if(response.data.userExists){
@@ -46,7 +59,7 @@ const AuthComponent = () => {
 
     async function handleVoiceClick (e) {
         e.preventDefault()
-        let status = await checkUser(username, state)
+        let status = await checkUser(username, state, 'voice')
         if(!status)
             return
         let voiceLink = '/'.concat(window.appid).concat('/').concat(state).concat('/voice')
@@ -56,7 +69,7 @@ const AuthComponent = () => {
 
     async function handleVideoClick(e) {
         e.preventDefault()
-        let status = await checkUser(username, state)
+        let status = await checkUser(username, state, 'face')
         if(!status)
             return
         let vidLink = '/'.concat(window.appid).concat('/').concat(state).concat('/video')

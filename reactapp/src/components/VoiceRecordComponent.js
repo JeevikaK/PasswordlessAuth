@@ -17,7 +17,10 @@ const VoiceRcordComponent = () => {
     const [showComponent, setShowComponent] = useState(false);
     const [recMail, setRecMail] = useState('');
     const [recPhone, setRecPhone] = useState('');
-    let [state, setState] = useState(useParams().state)
+    const [state, setState] = useState(useParams().state)
+    const [loading, setLoading] = useState(false)
+    const [loadingContent, setLoadingContent] = useState('')
+
   
     window.appid = useParams().id
 
@@ -68,7 +71,9 @@ const VoiceRcordComponent = () => {
       setAudioUrl(URL.createObjectURL(event.data));
     };
     
-    const handleSubmit = async (e) => {
+    const handleSignup = async (e) => {
+      setLoading(true)
+      setLoadingContent('Registering your voice...')
       e.preventDefault();
       const formData = new FormData();
       formData.append('voice_image', audioBlob, "recording.wav");
@@ -82,11 +87,44 @@ const VoiceRcordComponent = () => {
         })
         let json = await response.json();
         console.log(json);
+        console.log('registered!');
       }
       catch(err){
         console.log(err);
       }
+      setLoadingContent('')
+      setLoading(false)
     };
+
+    const handleLogin = async (e) => {
+      setLoading(true)
+      setLoadingContent('Verifying your voice...')
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append('voice_image', audioBlob, "recording.wav");
+      formData.append('username', localStorage.getItem('username'));
+      try{
+        let response = await fetch( process.env.REACT_APP_BASE_API + '/api/login-voice-auth', {
+        method: 'POST',
+        body: formData,
+        })
+        let json = await response.json();
+        console.log(json);
+        if(json.verified){
+          // let link = '/'.concat(window.appid).concat('/').concat('home')
+          // navigate(link);
+          console.log('verified!')
+        }
+        else{
+          console.log('not verified!')
+        }
+      }
+      catch(err){
+        console.log(err);
+      }
+      setLoadingContent('')
+      setLoading(false)
+    }
   
     useEffect(() => {
       if (recorder) {
@@ -142,7 +180,8 @@ const VoiceRcordComponent = () => {
                   className="inline-block rounded bg-gray-800 px-6 pt-2.5 mt-6 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
                   Record Again</button>
               )}
-              {audioUrl && (
+              
+              {audioUrl && state==='signup' && (
                 <button 
                   type='submit'
                   onClick={recovery}
@@ -150,6 +189,21 @@ const VoiceRcordComponent = () => {
                   data-te-ripple-color="light"
                   className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
                   Next</button>
+              )}
+
+              {audioUrl && state==='login' && !loading && (
+                <button 
+                  type='submit'
+                  onClick={handleLogin}
+                  data-te-ripple-init
+                  data-te-ripple-color="light"
+                  className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
+                  Verify</button>
+              )}
+              {loading && (
+                <div className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 text-xs font-medium uppercase leading-normal text-gray-200 ">
+                  {loadingContent}...
+                </div>
               )}
             </form>
           </div>
@@ -163,7 +217,13 @@ const VoiceRcordComponent = () => {
             </button>
           </div>
         </div>
-        {showComponent && <RecoveryComponent submission = {handleSubmit} setRecMail={setRecMail} setRecPhone={setRecPhone}/>}
+        {showComponent && <RecoveryComponent 
+          submission = {handleSignup} 
+          setRecMail={setRecMail} 
+          setRecPhone={setRecPhone} 
+          setLoading={setLoading} 
+          loading={loading} 
+          loadingContent={loadingContent}/> }
 
       </div>
       
