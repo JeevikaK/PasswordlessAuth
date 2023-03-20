@@ -5,7 +5,7 @@ import os
 
 encoder = VoiceEncoder()
 
-THRESH = 0.8
+THRESH = 0.75
 
 def create_embedding(audiofile):
     if isinstance(audiofile, str):

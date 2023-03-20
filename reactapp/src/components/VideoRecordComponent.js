@@ -26,9 +26,20 @@ function Camera() {
   }
 
   useEffect(() => {
-    const link = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)
-    console.log(link)
-    axios.get(link)
+    if (localStorage.getItem('username') === null) {
+      navigate('/'.concat(window.appid).concat('/').concat(state))
+    }
+    const endpoint1 = process.env.REACT_APP_BASE_API + '/api/get_user/'.concat(localStorage.getItem('username'))
+    axios.get(endpoint1)
+      .then((res) => {
+        if((state==='login'  && !res.data.face_auth) || (state==='signup' && res.data.face_auth) ){
+          navigate('/'.concat(window.appid).concat('/').concat(state))
+        }
+
+      })
+      
+    const endpoint2 = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)
+    axios.get(endpoint2)
     .then((res) => {
         window.appname = res.data.app_name
         console.log(window.appname)

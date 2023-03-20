@@ -1,21 +1,21 @@
 import axios from 'axios';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react'
-import AppNameComponent from './AppNameComponent';
+import AppNameComponent from '../AppNameComponent';
 
 
-const AuthComponent = () => {
+const REAuthComponent = ({type}) => {
 
     const [appName, setAppName] = useState('')
-    const [username, setUsername] = useState('')
-    const [state, setState] = useState(useParams().state)
+    const [username, setUsername] = useState(localStorage.getItem('username') || '')
     const navigate = useNavigate();
     const [error, setError] = useState(false)
     const [errorText, setErrorText] = useState('')
 
+    
     window.appid = useParams().id
 
-    async function checkUser(username, state, authType){
+    async function checkUser(username, type, authType){
         if (username === '') {
             setError(true)
             setErrorText('Please fill this field!')
@@ -24,8 +24,11 @@ const AuthComponent = () => {
         else{
             const endpoint = process.env.REACT_APP_BASE_API + '/api/get_user/'.concat(username)
             let response = await axios.get(endpoint)
-            switch(state){
-                case 'login':
+            console.log(response.data.voice_auth)
+            console.log(authType)
+            console.log(type)
+            switch(type){
+                case 'pre-auth':
                     if(!response.data.userExists){
                         setError(true)
                         setErrorText('Username does not exist!')
@@ -45,10 +48,15 @@ const AuthComponent = () => {
                     }
                 
                     break
-                case 'signup':
-                    if(response.data.userExists){
+                case 'post-auth':
+                    if(authType === 'voice' && response.data.voice_auth){
                         setError(true)
-                        setErrorText('Username already exists!')
+                        setErrorText('Voice authentication is already registered for this user!')
+                        return false
+                    }
+                    if(authType === 'face' && response.data.face_auth){
+                        setError(true)
+                        setErrorText('Face authentication is already registered for this user!')
                         return false
                     }
                     break
@@ -59,25 +67,40 @@ const AuthComponent = () => {
 
     async function handleVoiceClick (e) {
         e.preventDefault()
-        let status = await checkUser(username, state, 'voice')
+        let status = await checkUser(username, type, 'voice')
+        console.log(status)
         if(!status)
             return
-        let voiceLink = '/'.concat(window.appid).concat('/').concat(state).concat('/voice')
-        navigate(voiceLink);
+        if(type==='pre-auth'){   
+            let voiceLink = '/'.concat(window.appid).concat('/pre-auth').concat('/voice')
+            navigate(voiceLink);
+        }
+        else if(type==='post-auth'){
+            let voiceLink = '/'.concat(window.appid).concat('/post-auth').concat('/voice')
+            navigate(voiceLink);
+        }
         localStorage.setItem('username', username)
     }
 
     async function handleVideoClick(e) {
         e.preventDefault()
-        let status = await checkUser(username, state, 'face')
+        let status = await checkUser(username, type, 'face')
         if(!status)
             return
-        let vidLink = '/'.concat(window.appid).concat('/').concat(state).concat('/video')
-        navigate(vidLink);
+        if(type==='pre-auth'){
+            let vidLink = '/'.concat(window.appid).concat('/pre-auth').concat('/video')
+            navigate(vidLink);
+        }
+        else if(type==='post-auth'){
+            let vidLink = '/'.concat(window.appid).concat('/post-auth').concat('/video')
+            navigate(vidLink);
+        }
+        
         localStorage.setItem('username', username)
     }
 
     useEffect(() => {
+        console.log(username)
         const endpoint = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)
         axios.get(endpoint)
             .then((res) => {
@@ -96,17 +119,18 @@ const AuthComponent = () => {
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
                 <div className="w-full bg-gray-800 rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-5">
-                        {state === 'login' && <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-400 md:text-2xl dark:text-white">
-                            Login into your account
+                        {type === 'pre-auth' && <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-400 md:text-2xl dark:text-white">
+                            Login into your account first!
                         </h1>}
-                        {state === 'signup' && <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-400 md:text-2xl dark:text-white">
-                            Create an Account
+                        {type === 'post-auth' && <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-400 md:text-2xl dark:text-white">
+                            Register new Authentication Method!
                         </h1>}
-                        {state === 'login' && <h6 className="text-xl font-bold leading-tight tracking-tight text-gray-400 md:text-xl dark:text-white">{appName}</h6>}
                         <form className="space-y-4 md:space-y-6" method='POST'>
                             <div>
+
                                 <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-200 dark:text-white py-3">Username</label>
-                                <input name="username" id="username" value={username} onChange={(e) => {setUsername(e.target.value); setError(false)}} className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required=""></input>
+                                { type==='pre-auth' && <input name="username" id="username" value={username} onChange={(e) => {setUsername(e.target.value); setError(false)}} className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required=""></input>}
+                                { type==='post-auth' && <input name="username" id="username" value={username}  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  required="" readOnly></input>}
                                 {error && <p className='text-red-500 text-sm mt-2'>{errorText}</p>}
 
                                 <p className="text-sm font-medium pt-7 pb-4 text-gray-200">Biometric Verification</p>
@@ -151,15 +175,10 @@ const AuthComponent = () => {
                                 </div>
                             </div>
 
-                            {state === 'login' && <p className="text-sm font-light text-gray-200 dark:text-gray-400" >
-                                Don’t have an account yet? <a href={'/'.concat(window.appid).concat('/signup')} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">Sign up</a>
-                            </p>}
-                            {state === 'signup' && <p className="text-sm font-light text-gray-200 dark:text-gray-400" >
-                                Have an account already? <a href={'/'.concat(window.appid).concat('/login')} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">Login</a>
-                            </p>}
                             <p className="text-sm font-light text-gray-200 dark:text-gray-400" >
-                                Re-register a new authentication method? <a href={'/'.concat(window.appid).concat('/re-register')} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">Re-register</a>
+                                Don’t have an account yet? <a href={'/'.concat(window.appid).concat('/signup')} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">Sign up</a>
                             </p>
+                         
                         </form>
                     </div>
                 </div>
@@ -169,4 +188,4 @@ const AuthComponent = () => {
     );
 }
 
-export default AuthComponent;
+export default REAuthComponent;

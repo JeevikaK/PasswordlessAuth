@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
-import AppNameComponent from './AppNameComponent';
-import RecoveryComponent from './recoveryComponent';
+import AppNameComponent from '../AppNameComponent';
+import RecoveryComponent from '../recoveryComponent';
 
-const VoiceRcordComponent = () => {
+const VoiceRcordReregComponent = ({type, setType}) => {
 
   const navigate = useNavigate();
 
@@ -17,28 +17,28 @@ const VoiceRcordComponent = () => {
   const [showComponent, setShowComponent] = useState(false);
   const [recMail, setRecMail] = useState('');
   const [recPhone, setRecPhone] = useState('');
-  const [state, setState] = useState(useParams().state)
   const [loading, setLoading] = useState(false)
   const [loadingContent, setLoadingContent] = useState('')
   const [voicePlaceholder, setVoicePlaceholder] = useState(true)
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('Verification failed. Please try again.')
+  
 
 
   window.appid = useParams().id
 
   useEffect(() => {
 
-    console.log(state)
+    console.log(type)
     if (localStorage.getItem('username') === null) {
-      navigate('/'.concat(window.appid).concat('/').concat(state))
+      navigate('/'.concat(window.appid).concat('/re-register'))
     }
 
     const endpoint1 = process.env.REACT_APP_BASE_API + '/api/get_user/'.concat(localStorage.getItem('username'))
     axios.get(endpoint1)
       .then((res) => {
-        if((state==='login'  && !res.data.voice_auth) || (state==='signup' && res.data.voice_auth) ){
-          navigate('/'.concat(window.appid).concat('/').concat(state))
+        if((type=='pre-auth'  && !res.data.voice_auth) || (type=='post-auth' && res.data.voice_auth) ){
+          navigate('/'.concat(window.appid).concat('/re-register'))
         }
         
       })
@@ -60,7 +60,7 @@ const VoiceRcordComponent = () => {
 
 
   function goBack() {
-    let link = '/'.concat(window.appid).concat('/').concat(state)
+    let link = '/'.concat(window.appid).concat('/re-register')
     navigate(link);
   }
 
@@ -110,6 +110,8 @@ const VoiceRcordComponent = () => {
       let json = await response.json();
       console.log(json);
       console.log('registered!');
+      let link = '/'.concat(window.appid).concat('/login')
+      navigate(link);
     }
     catch (err) {
       console.log(err);
@@ -134,10 +136,10 @@ const VoiceRcordComponent = () => {
       let json = await response.json();
       console.log(json);
       if (json.verified) {
-        console.log('verified!')
-        localStorage.removeItem('username')
         // let link = '/'.concat(window.appid).concat('/').concat('home')
         // navigate(link);
+        console.log('verified!')
+        setType('post-auth')
       }
       else {
         console.log('not verified!')
@@ -168,12 +170,12 @@ const VoiceRcordComponent = () => {
   return (
     <div className='h-screen bg-black overflow-auto'>
       <AppNameComponent />
-      {state === 'login' && <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>{id}</p>}
+      {type === 'pre-auth' && <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>{id}</p>}
       {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 mb-8 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
         <div className="w-[22em] h-[25em] bg-gray-800 p-2 mb-2 rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-center items-center">
-          {state === 'signup' && <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-4 md:text-3xl dark:text-white'>Register your Voice</h1>}
-          {state === 'login' && <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-4 md:text-3xl dark:text-white'>Verify your Voice</h1>}
+          {type === 'post-auth' && <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-4 md:text-3xl dark:text-white'>Register your Voice</h1>}
+          {type === 'pre-auth' && <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-4 md:text-3xl dark:text-white'>Verify your Voice</h1>}
           {voicePlaceholder && (<>
             <div className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 text-xs font-medium uppercase leading-normal text-gray-200 ">
               Read the following text aloud
@@ -189,7 +191,7 @@ const VoiceRcordComponent = () => {
                 <audio src={audioUrl} controls />
               </div>
             )}
-            {!audioUrl && (<>  
+            {!audioUrl && (<>
               <button
                 onClick={startRecording}
                 disabled={isRecording}
@@ -219,18 +221,19 @@ const VoiceRcordComponent = () => {
                 className="inline-block rounded bg-gray-800 px-6 pt-2.5 mt-6 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
                 Record Again</button>
             )}
+            
 
-            {audioUrl && state === 'signup' && (
+            {audioUrl && type === 'post-auth' && (
               <button
                 type='submit'
-                onClick={recovery}
+                onClick={handleSignup}
                 data-te-ripple-init
                 data-te-ripple-color="light"
                 className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
-                Next</button>
+                Register</button>
             )}
 
-            {audioUrl && state === 'login' && !loading && (
+            {audioUrl && type === 'pre-auth' && !loading && (
               <button
                 type='submit'
                 onClick={handleLogin}
@@ -256,17 +259,17 @@ const VoiceRcordComponent = () => {
           </button>
         </div>
       </div>
-      {showComponent && <RecoveryComponent
+      {/* {showComponent && <RecoveryComponent
         submission={handleSignup}
         setRecMail={setRecMail}
         setRecPhone={setRecPhone}
         setLoading={setLoading}
         loading={loading}
-        loadingContent={loadingContent} />}
+        loadingContent={loadingContent} />} */}
 
     </div>
 
   );
 }
 
-export default VoiceRcordComponent;
+export default VoiceRcordReregComponent;

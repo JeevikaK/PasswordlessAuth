@@ -2,9 +2,7 @@ import AuthComponent from "../components/AuthComponent";
 
 const AuthRoute = () => {
     return ( 
-        <AuthComponent 
-        // authState={authState}
-        />
+        <AuthComponent />
      );
 }
  

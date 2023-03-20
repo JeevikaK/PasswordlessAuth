@@ -119,7 +119,9 @@ class Voice_auth_signup(APIView):
     def post(self, request):
         try:
             user = User.objects.get(username=request.data.get("username"))
-            user.voice_image = request.data.get("voice_image")
+            embedding = create_embedding(request.data.get("voice_image"))
+            save_embedding(embedding)
+            user.voice_image = File( open( 'media/registeredVoices/embedding.npy' ,'rb'))
             user.voice_auth = True
             user.save()
             return Response({"status": "success"})
