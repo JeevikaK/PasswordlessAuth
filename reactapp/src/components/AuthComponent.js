@@ -88,6 +88,16 @@ const AuthComponent = () => {
         
     }, [])
 
+    function myFunc(){
+        console.log('clicked')
+        const endpoint = 'http://127.0.0.1:5000/callback/'
+        axios.post(endpoint, {
+            'username': 'test',
+            'password': 'test'
+        }).then((res) => {console.log(res.data)})
+        .catch((err) => console.log(err))
+    }
+
 
     return (
         <>
@@ -103,6 +113,8 @@ const AuthComponent = () => {
                             Create an Account
                         </h1>}
                         {state === 'login' && <h6 className="text-xl font-bold leading-tight tracking-tight text-gray-400 md:text-xl dark:text-white">{appName}</h6>}
+                        
+                        <button className='border border-gray-300' onClick={myFunc}> click me</button>
                         <form className="space-y-4 md:space-y-6" method='POST'>
                             <div>
                                 <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-200 dark:text-white py-3">Username</label>
