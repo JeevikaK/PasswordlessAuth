@@ -1,18 +1,15 @@
 from django.shortcuts import render, redirect
 from nopass.main import *
-from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 import json
 
-APP_NAME = 'Sample Application'
-APP_ID = '46b8a9a4b87444388fdb2651a9843a55'
-APP_SECRET = '62684f71ec54e1a39eeac0b21bc7fcf5'
-APP_REDIRECT_URI = 'http://localhost:3000/callback'
-
-npass = NoPass(APP_ID, APP_SECRET, APP_NAME, APP_REDIRECT_URI)
+npass = NoPass(settings.APP_ID, settings.APP_SECRET)
 
 def index(request):
     if request.session.get('user'):
-        return render(request, 'sampleapp/index.html', {'user': request.session.get('user')})
+        return render(request, 'sampleapp/index.html', {
+            'user': json.dumps(request.session.get("user"), indent=4)
+        })
     return render(request, 'sampleapp/index.html', {'user': None})
 
 def signup(request):
@@ -21,11 +18,11 @@ def signup(request):
 def login(request):
     return npass.log_in()
 
-@csrf_exempt
 def callback(request):
-    print(request.method)
-    if request.method == 'POST':
-        data = json.loads(request.body.decode('utf-8'))
-        print(type(data), data)
-    request.session['user'] = data
+    user = npass.get_user(request)
+    request.session['user'] = user
+    return redirect('index')
+
+def logout(request):
+    request.session['user'] = None
     return redirect('index')

@@ -20,17 +20,20 @@ def create_embedding(audiofile):
     if not isinstance(audiofile, str):
         os.remove(f'media/temp-{unikey}.wav')
     return e
+    pass
 
 def verify(e1, e2):
-    # return np.dot(e1, e2) / (np.linalg.norm(e1) * np.linalg.norm(e2))
     sim = e1 @ e2
     print("similarity: ", sim)
     return True if sim > THRESH else False
+    # pass
 
 def save_embedding(e):
     with open(f'media/registeredVoices/embedding.npy', 'wb') as f:
         np.save(f, e)
+    # pass
 
 def load_embedding(name):
     with open(f'media/registeredVoices/{name}.npy', 'rb') as f:
         return np.load(f)
+    # pass

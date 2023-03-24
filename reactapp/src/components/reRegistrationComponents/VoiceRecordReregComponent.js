@@ -136,8 +136,6 @@ const VoiceRcordReregComponent = ({type, setType}) => {
       let json = await response.json();
       console.log(json);
       if (json.verified) {
-        // let link = '/'.concat(window.appid).concat('/').concat('home')
-        // navigate(link);
         console.log('verified!')
         setType('post-auth')
       }

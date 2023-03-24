@@ -102,21 +102,23 @@ const VoiceRcordComponent = () => {
     formData.append("recovery_email", recMail);
     formData.append("recovery_phone_number", recPhone);
     formData.append('username', localStorage.getItem('username'));
+    formData.append('app_id', window.appid)
     try {
       let response = await fetch(process.env.REACT_APP_BASE_API + '/api/signup-voice-auth', {
         method: 'POST',
         body: formData,
       })
       let json = await response.json();
-      console.log(json);
       console.log('registered!');
+      localStorage.removeItem('username')
+      const redirect = json.redirect_url+'?code='+json.code+'&len='+json.nonce_len+'&mode=voice'
+      window.location.href = redirect
     }
     catch (err) {
       console.log(err);
+      setLoadingContent('')
+      setLoading(false)
     }
-    setLoadingContent('')
-    setLoading(false)
-    localStorage.removeItem('username')
   };
 
   const handleLogin = async (e) => {
@@ -126,6 +128,7 @@ const VoiceRcordComponent = () => {
     const formData = new FormData();
     formData.append('voice_image', audioBlob, "recording.wav");
     formData.append('username', localStorage.getItem('username'));
+    formData.append('app_id', window.appid)
     try {
       let response = await fetch(process.env.REACT_APP_BASE_API + '/api/login-voice-auth', {
         method: 'POST',
@@ -136,8 +139,8 @@ const VoiceRcordComponent = () => {
       if (json.verified) {
         console.log('verified!')
         localStorage.removeItem('username')
-        // let link = '/'.concat(window.appid).concat('/').concat('home')
-        // navigate(link);
+        const redirect = json.redirect_url+'?code='+json.code+'&len='+json.nonce_len+'&mode=voice'
+        window.location.href = redirect
       }
       else {
         console.log('not verified!')
@@ -147,13 +150,12 @@ const VoiceRcordComponent = () => {
     }
     catch (err) {
       console.log(err);
+      setLoadingContent('')
+      setLoading(false)
     }
-    setLoadingContent('')
-    setLoading(false)
   }
 
   useEffect(() => {
-
     if (recorder) {
       recorder.addEventListener('dataavailable', handleDataAvailable);
     }

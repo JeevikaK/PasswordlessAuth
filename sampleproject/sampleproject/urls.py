@@ -22,5 +22,6 @@ urlpatterns = [
     path('', index, name='index'),
     path('signup/', signup, name='signup'),
     path('login/', login, name='login'),
-    path('callback/', callback, name='callback')
+    path('callback/', callback, name='callback'),
+    path('logout/', logout, name='logout'),
 ]

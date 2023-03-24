@@ -1,0 +1,8 @@
+{
+    "app_id": "38e9c4108b74437081708105c34db694",
+    "app_name": "New App",
+    "created_at": "2023-03-24T19:24:53.781660+05:30",
+    "public_key": "-----BEGIN RSA PUBLIC KEY-----\nMIIBCQKCAQAC2Rcmuj8P6PjT3iqNWnf9yhdSRT8nQKFLEjr0/wyMRpV75Rkfh2dH\nTN26NiaVKHu6wl27J4lLCYenkl/kjOe0ZH2aRDhj1KkMJDwZplrgh6TnR1OiRUhT\ny38lDcH5dW8npGHDBiBLUiLEfvf9xBFJRRAfyFvfMiaecO4iYkIAP5X0PQTCnlVK\n6T0MnK91QTjGwcNyaHnzjdiVnPx8b+23eR90P0l5wxiBH+7lKstx4IAaw5A0mBdv\nIyD2UU5rZSW6Sh5eh4RuQu5fVUBSdxY6JiklcXf8mHDTG8cRxprqJbl3SDHxOawy\nuoLNr5N3LRq4FZIsrcal1dXvmZRULXCdAgMBAAE=\n-----END RSA PUBLIC KEY-----",
+    "redirection_url": "http://127.0.0.1:5000/callback",
+    "status": "success"
+}

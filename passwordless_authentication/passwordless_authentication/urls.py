@@ -23,10 +23,13 @@ urlpatterns = [
     path('api/register_app',Register_app.as_view(), name="register_app"),
     path('api/authenticate_app', Authenticate_app.as_view(), name="Authenticate_app"),
     path('api/get_app/<str:app_id>', Get_app.as_view(), name="Get_app"),
+    path('api/reset_redirect_url', Reset_redirect_url.as_view(), name="Reset_redirect_url"),
     path('api/get_user/<str:username>', Get_user.as_view(), name="Get_user"),
+    path('api/get_user_by_token/<str:token>', Get_user_by_token.as_view(), name="Get_user_by_token"),
     path('api/signup-face-auth', Face_auth_signup.as_view(), name="Face_auth_signup"),
     path('api/login-face-auth', Face_auth_login.as_view(), name="Face_auth_login"),
     path('api/signup-voice-auth', Voice_auth_signup.as_view(), name="Voice_auth_signup"),
     path('api/login-voice-auth', Voice_auth_login.as_view(), name="Voice_auth_login"),
+    # path('api/generate-user-code', Generate_user_code.as_view(), name="Generate_user_code")
 ]
 
