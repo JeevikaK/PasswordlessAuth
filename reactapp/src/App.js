@@ -9,6 +9,7 @@ import VideoRecord_reReg from './routes/reRegistrationRoutes/VideoRecord_reReg';
 import VoiceRecord_postReg from './routes/reRegistrationRoutes/VoiceRecord_postReg';
 import VideoRecord_postReg from './routes/reRegistrationRoutes/VideoRecord_postReg';
 import VideoLoginRoute from './routes/VideoLoginRoute';
+import VideoRecorder from './components/Websocket';
 
 class App extends React.Component {
   render(){
@@ -24,6 +25,7 @@ class App extends React.Component {
           <Route path=':id/:state/voice' element={<VoiceRecord/>}></Route>
           <Route path=':id/:state/video' element={<VideoRecord />}></Route>
           <Route path=':id/login/video' element={<VideoLoginRoute />}></Route>
+          <Route path=':id/login/websocket' element={<VideoRecorder />}></Route>
         </Routes>
     </BrowserRouter>
     )
