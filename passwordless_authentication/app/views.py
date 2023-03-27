@@ -134,7 +134,8 @@ class Face_auth_login(APIView):
     def post(self, request):
         username = request.data.get("username")
         face_video = request.data.get("face_video")
-
+        
+        #create embedding logic
         unikey = uuid.uuid4().hex
         with open(f'media/temp-{unikey}.mp4', 'wb') as f:
             f.write(face_video.read())
@@ -150,6 +151,7 @@ class Face_auth_login(APIView):
         video.release()
         print(count)
         os.remove(f'media/temp-{unikey}.mp4')
+        #end logic
 
         try:
             user = User.objects.get(username=username)

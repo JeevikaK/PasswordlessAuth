@@ -25,9 +25,9 @@ class App extends React.Component {
           <Route path=':id/post-auth/video' element={<VideoRecord_postReg />}></Route>
           <Route path=':id/:state' element={<AuthRoute/>}></Route>
           <Route path=':id/:state/voice' element={<VoiceRecord/>}></Route>
-          <Route path=':id/:state/video' element={<VideoRecord />}></Route>
+          <Route path=':id/signup/video' element={<VideoRecord />}></Route>
           <Route path=':id/login/video' element={<VideoLoginRoute />}></Route>
-          <Route path=':id/login/websocket' element={<VideoRecorder />}></Route>
+          {/* <Route path=':id/login/websocket' element={<VideoRecorder />}></Route> */}
         </Routes>
     </BrowserRouter>
     )
