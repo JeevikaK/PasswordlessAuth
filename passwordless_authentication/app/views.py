@@ -9,7 +9,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .voice_utils import *
 from django.core.files import File
 from .crypt import *
-
+import cv2
+import numpy as np
 
 # Create your views here.
 
@@ -132,10 +133,27 @@ class Face_auth_login(APIView):
 
     def post(self, request):
         username = request.data.get("username")
-        face_image = request.data.get("face_image")
+        face_video = request.data.get("face_video")
+
+        unikey = uuid.uuid4().hex
+        with open(f'media/temp-{unikey}.mp4', 'wb') as f:
+            f.write(face_video.read())
+        path = f'media/temp-{unikey}.mp4'
+        count = 0
+        video = cv2.VideoCapture(path)
+        success, frame = video.read()
+        while success:
+            processed_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            count += 1
+            cv2.waitKey(1)
+            success, frame = video.read()
+        video.release()
+        print(count)
+        os.remove(f'media/temp-{unikey}.mp4')
+
         try:
             user = User.objects.get(username=username)
-            if user.face_image == face_image:
+            if user.face_image == face_video:
                 return Response({"status": "success", **user})
             else:
                 return Response({"status": "failed"})

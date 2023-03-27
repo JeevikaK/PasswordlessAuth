@@ -6,8 +6,9 @@ import default_image from '../other/camera.jpg'
 
 const VideoRecorder = () => {
   const [recording, setRecording] = useState(false);
-  const [webSocket, setWebSocket] = useState(null);
   const [recordedVideo, setRecordedVideo] = useState(null);
+  const [loading, setLoading] = useState(false)
+  const [loadingContent, setLoadingContent] = useState('')
 
   const videoRef = useRef(null);
 
@@ -21,45 +22,17 @@ const VideoRecorder = () => {
         const chunks = [];
         mediaRecorder.ondataavailable = (e) => {
           chunks.push(e.data);
-
-          if (webSocket && webSocket.readyState === WebSocket.OPEN) {
-            webSocket.send(e.data);
-          }
         };
 
         mediaRecorder.onstop = () => {
-          const blob = new Blob(chunks, { type: 'video/mp4' });
-          const url = URL.createObjectURL(blob);
+          window.blob = new Blob(chunks, { type: 'video/mp4' });
+          // console.log(window.blob)
+          const url = URL.createObjectURL(window.blob);
           setRecordedVideo(url);
-
-          if (webSocket && webSocket.readyState === WebSocket.OPEN) {
-            webSocket.send('STOP');
-          }
         };
 
         mediaRecorder.start();
         videoRef.current.srcObject = stream;
-
-        let url = `ws://${window.location.host}/ws/video-upload/`
-        const ws = new WebSocket(url);
-
-        ws.onmessage = () => {
-          console.log("hello testing")
-        }
-
-        ws.onopen = () => {
-          console.log('WebSocket connected');
-          setWebSocket(ws);
-        };
-
-        ws.onclose = () => {
-          console.log('WebSocket closed');
-          setWebSocket(null);
-        };
-
-        ws.onerror = (error) => {
-          console.error(error);
-        };
       })
       .catch((error) => {
         console.error(error);
@@ -78,6 +51,39 @@ const VideoRecorder = () => {
   const handleClear = () => {
     setRecordedVideo(null);
   };
+
+  const handleSubmit = async (e) => {
+    console.log('im here')
+    setLoading(true)
+    setLoadingContent('Verifying your face...')
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('username', localStorage.getItem('username'))
+    formData.append('face_video', window.blob)
+
+    console.log(window.blob)
+    try{
+      let response = await fetch(process.env.REACT_APP_BASE_API  + '/api/login-face-auth', {
+        method: 'POST',
+        body: formData,
+      })
+      let json = await response.json();
+      console.log(json)
+      if(json.verified){
+        console.log('verified!')
+        localStorage.removeItem('username')
+      }
+      else{
+        console.log('not verified!')
+        setRecordedVideo(null)
+      }
+    }
+    catch (err) {
+      console.log(err)
+      setLoadingContent('')
+      setLoading(false)
+    }
+  }
 
   return (
     <div className='h-screen bg-black overflow-auto'>
@@ -119,6 +125,7 @@ const VideoRecorder = () => {
                         )}
                         {recordedVideo && (
                             <button
+                                onClick={handleSubmit}
                                 type='submit'
                                 data-te-ripple-init
                                 data-te-ripple-color="light"
@@ -127,7 +134,6 @@ const VideoRecorder = () => {
                             </button>
                         )}
                     </div>
-
                 {recording && (
                     <div>
                     <video ref={videoRef} autoPlay poster={default_image} style={{ width: '500px'}}/>

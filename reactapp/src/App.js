@@ -11,6 +11,8 @@ import VideoRecord_postReg from './routes/reRegistrationRoutes/VideoRecord_postR
 import VideoLoginRoute from './routes/VideoLoginRoute';
 import VideoRecorder from './components/Websocket';
 
+window.blob = ''
+
 class App extends React.Component {
   render(){
     return(
