@@ -9,9 +9,8 @@ import VideoRecord_reReg from './routes/reRegistrationRoutes/VideoRecord_reReg';
 import VoiceRecord_postReg from './routes/reRegistrationRoutes/VoiceRecord_postReg';
 import VideoRecord_postReg from './routes/reRegistrationRoutes/VideoRecord_postReg';
 import VideoLoginRoute from './routes/VideoLoginRoute';
-import VideoRecorder from './components/Websocket';
+// import VideoRecorder from './components/Websocket';
 
-window.blob = ''
 
 class App extends React.Component {
   render(){

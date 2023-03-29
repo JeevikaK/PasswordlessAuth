@@ -1,8 +1,8 @@
-import VideoRecordComponent from "../components/VideoRecordComponent";
+import CameraRecordComponent from "../components/CameraRecordComponent";
 
 const VideoRecord = () => {
     return ( 
-        <VideoRecordComponent></VideoRecordComponent>
+        <CameraRecordComponent></CameraRecordComponent>
      );
 }
  

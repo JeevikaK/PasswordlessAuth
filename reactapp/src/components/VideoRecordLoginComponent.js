@@ -1,10 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import AppNameComponent from './AppNameComponent';
 import default_image from '../other/camera.jpg'
+import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom';
 
 
 const VideoRecorder = () => {
+  const [id, setId] = useState('')
   const [recording, setRecording] = useState(false);
   const [loading, setLoading] = useState(false)
   const [loadingContent, setLoadingContent] = useState('Verifying...')
@@ -14,6 +16,31 @@ const VideoRecorder = () => {
   const navigate = useNavigate();
   const videoRef = useRef(null);
   window.appid = useParams().id
+
+  useEffect(() => {
+    if (localStorage.getItem('username') === null) {
+      navigate('/'.concat(window.appid).concat('/login'))
+    }
+    const endpoint1 = process.env.REACT_APP_BASE_API + '/api/get_user/'.concat(localStorage.getItem('username'))
+    axios.get(endpoint1)
+      .then((res) => {
+        // console.log(res.data.face_auth)
+        if (!res.data.face_auth) {
+          navigate('/'.concat(window.appid).concat('/login'))
+        }
+
+    })
+
+    const endpoint2 = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)
+    axios.get(endpoint2)
+      .then((res) => {
+        window.appname = res.data.app_name
+        console.log(window.appname)
+        setId(window.appname)
+      })
+      .catch((err) => console.log(err))
+  }, [])
+
 
   const handleStart = () => {
     setError(false)

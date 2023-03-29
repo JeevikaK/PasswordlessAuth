@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
 import AppNameComponent from '../AppNameComponent';
-import RecoveryComponent from '../recoveryComponent';
+// import RecoveryComponent from '../recoveryComponent';
 
 const VoiceRcordReregComponent = ({type, setType}) => {
 
@@ -14,9 +14,9 @@ const VoiceRcordReregComponent = ({type, setType}) => {
   const [audioUrl, setAudioUrl] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [showComponent, setShowComponent] = useState(false);
-  const [recMail, setRecMail] = useState('');
-  const [recPhone, setRecPhone] = useState('');
+  // const [showComponent, setShowComponent] = useState(false);
+  // const [recMail, setRecMail] = useState('');
+  // const [recPhone, setRecPhone] = useState('');
   const [loading, setLoading] = useState(false)
   const [loadingContent, setLoadingContent] = useState('')
   const [voicePlaceholder, setVoicePlaceholder] = useState(true)
@@ -64,10 +64,10 @@ const VoiceRcordReregComponent = ({type, setType}) => {
     navigate(link);
   }
 
-  function recovery(e) {
-    e.preventDefault();
-    setShowComponent(true);
-  }
+  // function recovery(e) {
+  //   e.preventDefault();
+  //   setShowComponent(true);
+  // }
 
   const startRecording = () => {
     setError(false)
@@ -99,8 +99,8 @@ const VoiceRcordReregComponent = ({type, setType}) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append('voice_image', audioBlob, "recording.wav");
-    formData.append("recovery_email", recMail);
-    formData.append("recovery_phone_number", recPhone);
+    // formData.append("recovery_email", recMail);
+    // formData.append("recovery_phone_number", recPhone);
     formData.append('username', localStorage.getItem('username'));
     try {
       let response = await fetch(process.env.REACT_APP_BASE_API + '/api/signup-voice-auth', {
@@ -128,8 +128,9 @@ const VoiceRcordReregComponent = ({type, setType}) => {
     const formData = new FormData();
     formData.append('voice_image', audioBlob, "recording.wav");
     formData.append('username', localStorage.getItem('username'));
+    let endpoint = process.env.REACT_APP_BASE_API + '/api/re_reg-voice-auth'
     try {
-      let response = await fetch(process.env.REACT_APP_BASE_API + '/api/login-voice-auth', {
+      let response = await fetch(endpoint, {
         method: 'POST',
         body: formData,
       })

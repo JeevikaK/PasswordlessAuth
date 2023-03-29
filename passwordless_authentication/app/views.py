@@ -7,6 +7,7 @@ import uuid
 from secrets import *
 from rest_framework.parsers import MultiPartParser, FormParser
 from .voice_utils import *
+from .face_utils import *
 from django.core.files import File
 from .crypt import *
 import cv2
@@ -114,16 +115,39 @@ class Face_auth_signup(APIView):
     def post(self, request):
         try:
             user = User.objects.get(username=request.data.get("username"))
-            user.face_image = request.data.get("face_image")
+            embedding = create_face_embedding(request.data.get("face_image"))
+            save_face_embedding(embedding)
+            user.face_image = File(open("media/registeredFaces/embedding.npy", "rb"))
             user.face_auth = True
             user.save()
             return Response({"status": "success"})
         except User.DoesNotExist:
+            app_id = request.data.get("app_id")
+            app = Applications.objects.get(app_id=app_id)
+            embedding = create_face_embedding(request.data.get("face_image"))
+            save_face_embedding(embedding)
             request.data.update({"face_auth": True})
+            request.data.update(
+                {
+                    "face_image": File(
+                        open("media/registeredFaces/embedding.npy", "rb")
+                    )
+                }
+            )
             serializer = UserSerializer(data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
-                return Response({**serializer.data, "status": "success"})
+                user = User.objects.get(username=request.data.get("username"))
+                code, nonce_len = generate_code(user.token, app.public_key)
+                return Response(
+                    {
+                        **serializer.data,
+                        "status": "success",
+                        "code": code,
+                        "nonce_len": nonce_len,
+                        "redirect_url": app.redirection_url,
+                    }
+                )
             else:
                 return Response({"status": "failed"})
 
