@@ -34,11 +34,10 @@ function Camera() {
     const endpoint1 = process.env.REACT_APP_BASE_API + '/api/get_user/'.concat(localStorage.getItem('username'))
     axios.get(endpoint1)
       .then((res) => {
-        // console.log(res.data.face_auth)
-        if (res.data.face_auth) {
+        if(res.data.userExists){
           navigate('/'.concat(window.appid).concat('/signup'))
         }
-
+        // console.log(res.data.face_auth)
     })
 
     const endpoint2 = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)

@@ -146,6 +146,7 @@ const VoiceRcordComponent = () => {
         console.log('not verified!')
         recordAgain()
         setError(true)
+        setLoading(false)
       }
     }
     catch (err) {

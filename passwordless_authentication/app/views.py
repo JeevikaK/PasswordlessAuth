@@ -95,6 +95,7 @@ class Get_user(APIView):
         except User.DoesNotExist:
             return Response({"userExists": False})
         
+        
 class Get_user_by_token(APIView):
     def get(self, request, token):
         try:
@@ -193,8 +194,8 @@ class Voice_auth_signup(APIView):
     def post(self, request):
         try:
             user = User.objects.get(username=request.data.get("username"))
-            embedding = create_embedding(request.data.get("voice_image"))
-            save_embedding(embedding)
+            embedding = create_voice_embedding(request.data.get("voice_image"))
+            save_voice_embedding(embedding)
             user.voice_image = File( open( 'media/registeredVoices/embedding.npy' ,'rb'))
             user.voice_auth = True
             user.save()
@@ -202,8 +203,8 @@ class Voice_auth_signup(APIView):
         except User.DoesNotExist:
             app_id = request.data.get("app_id")
             app = Applications.objects.get(app_id=app_id)
-            embedding = create_embedding(request.data.get("voice_image"))
-            save_embedding(embedding)
+            embedding = create_voice_embedding(request.data.get("voice_image"))
+            save_voice_embedding(embedding)
             request.data.update({"voice_auth": True})
             request.data.update({"voice_image": File( open( 'media/registeredVoices/embedding.npy' ,'rb'))})
             serializer = UserSerializer(data=request.data)
@@ -228,9 +229,9 @@ class Voice_auth_login(APIView):
             app = Applications.objects.get(app_id=app_id)
             if user.voice_auth:
                 user_ob = UserSerializer(user)
-                embedding_test = create_embedding(voice_image)
-                embedding_reg = load_embedding(user.username)
-                if verify(embedding_test, embedding_reg):
+                embedding_test = create_voice_embedding(voice_image)
+                embedding_reg = load_voice_embedding(user.username)
+                if verify_voice(embedding_test, embedding_reg):
                     code, nonce_len = generate_code(user.token, app.public_key)
                     return Response({"verified": True, **user_ob.data, "code": code, "nonce_len": nonce_len, "redirect_url": app.redirection_url})
                 else:
