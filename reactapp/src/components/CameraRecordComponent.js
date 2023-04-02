@@ -99,9 +99,9 @@ function Camera() {
       let json = await response.json();
       console.log(json)
       console.log('registered!');
-      // localStorage.removeItem('username')
-      // const redirect = json.redirect_url+'?code='+json.code+'&len='+json.nonce_len+'&mode=voice'
-      // window.location.href = redirect
+      localStorage.removeItem('username')
+      const redirect = json.redirect_url+'?code='+json.code+'&len='+json.nonce_len+'&mode=video'
+      window.location.href = redirect
     }
     catch (err) {
       console.log(err);
@@ -138,7 +138,7 @@ function Camera() {
               </button>
             </div>
             {photo && <img src={photo} style={{ width: '300px', height: '250px' }} className='pt-5 pb-5' />}
-            {photo && <button
+            {photo && !loading && <button
               onClick={recovery}
               type="button"
               data-te-ripple-init
@@ -146,7 +146,13 @@ function Camera() {
               className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-300 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
               Next
             </button>}
+            {loading && (
+                <div className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 text-xs font-medium uppercase leading-normal text-gray-200 ">
+                {loadingContent}...
+                </div>
+            )}
           </form>
+          
         </div>
         <div className='flex space-x-4'>
           <button type='button'

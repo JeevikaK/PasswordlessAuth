@@ -47,6 +47,8 @@ class NoPass:
             raise Exception('User not found')
         if mode=='voice':
             resp.update({'mode': 'Voice Authentication'})
+        elif mode=='video':
+            resp.update({'mode': 'Face Authentication'})
         resp.update({'nonce': nonce})
         resp.update({'authenticated at': str(timezone.now())})
         resp.update({'token': token})

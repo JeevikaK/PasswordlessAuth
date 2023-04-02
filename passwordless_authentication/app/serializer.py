@@ -10,3 +10,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+
+class RecoveryTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecoveryToken
+        fields = '__all__'

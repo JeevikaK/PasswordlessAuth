@@ -5,17 +5,18 @@ import default_image from '../../other/camera.jpg'
 import axios from 'axios'
 // import RecoveryComponent from './recoveryComponent';
 
-function Camera() {
+function Camera({recov}) {
 
   const navigate = useNavigate();
 
   const videoRef = useRef(null);
 
+  const [recToken, setRecToken] = useState(useParams().token);
   const [id, setId] = useState('')
   const [photo, setPhoto] = useState(null);
   const [showComponent, setShowComponent] = useState(false);
-  const [recMail, setRecMail] = useState('');
-  const [recPhone, setRecPhone] = useState('');
+  // const [recMail, setRecMail] = useState('');
+  // const [recPhone, setRecPhone] = useState('');
   const [camOn, setCamOn] = useState(false);
   const [blob, setBlob] = useState(null)
   const [loadingContent, setLoadingContent] = useState('Registering....')
@@ -35,7 +36,7 @@ function Camera() {
     axios.get(endpoint1)
       .then((res) => {
         // console.log(res.data.face_auth)
-        if (res.data.face_auth) {
+        if (recov==undefined && res.data.face_auth) {
           navigate('/'.concat(window.appid).concat('/re-register'))
         }
 
@@ -87,13 +88,21 @@ function Camera() {
     e.preventDefault();
     const formData = new FormData();
     console.log(typeof blob, blob)
+
+    let endpoint = ''
+    if(recov==='recover'){
+      endpoint = process.env.REACT_APP_BASE_API + '/api/recover_verify_face'
+      formData.append('recovery_token', recToken);
+    }
+    else{
+      endpoint = process.env.REACT_APP_BASE_API + '/api/signup-face-auth'
+      formData.append('username', localStorage.getItem('username'));
+      formData.append('app_id', window.appid)
+    }
     formData.append('face_image', blob, "photo.jpeg");
-    formData.append("recovery_email", recMail);
-    formData.append("recovery_phone_number", recPhone);
-    formData.append('username', localStorage.getItem('username'));
-    formData.append('app_id', window.appid)
+    
     try {
-      let response = await fetch(process.env.REACT_APP_BASE_API + '/api/signup-face-auth', {
+      let response = await fetch(endpoint, {
         method: 'POST',
         body: formData,
       })
@@ -138,7 +147,7 @@ function Camera() {
               </button>
             </div>
             {photo && <img src={photo} style={{ width: '300px', height: '250px' }} className='pt-5 pb-5' />}
-            {photo && <button
+            {photo && !loading && <button
               onClick={handleSubmit}
               type="button"
               data-te-ripple-init
@@ -146,6 +155,12 @@ function Camera() {
               className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-300 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
               Submit
             </button>}
+
+            {loading && (
+              <div className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 text-xs font-medium uppercase leading-normal text-gray-200 ">
+                {loadingContent}...
+              </div>
+            )}
           </form>
         </div>
         <div className='flex space-x-4'>

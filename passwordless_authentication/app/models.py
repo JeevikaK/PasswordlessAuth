@@ -41,3 +41,13 @@ class User(models.Model):
     def _str_(self):
         return self.username
     
+
+class RecoveryToken(models.Model):
+    token = models.CharField(max_length=100, primary_key=True)
+    username = models.CharField(max_length=100)
+    valid = models.BooleanField(default=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def _str_(self):
+        return self.token 
+    

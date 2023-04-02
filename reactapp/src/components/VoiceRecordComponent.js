@@ -23,6 +23,7 @@ const VoiceRcordComponent = () => {
   const [voicePlaceholder, setVoicePlaceholder] = useState(true)
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('Verification failed. Please try again.')
+  const [userMail, setUserMail] = useState('')
 
 
   window.appid = useParams().id
@@ -37,6 +38,7 @@ const VoiceRcordComponent = () => {
     const endpoint1 = process.env.REACT_APP_BASE_API + '/api/get_user/'.concat(localStorage.getItem('username'))
     axios.get(endpoint1)
       .then((res) => {
+        setUserMail(res.data.recovery_email)
         if((state==='login'  && !res.data.voice_auth) || (state==='signup' && res.data.voice_auth) ){
           navigate('/'.concat(window.appid).concat('/').concat(state))
         }
@@ -156,6 +158,23 @@ const VoiceRcordComponent = () => {
     }
   }
 
+  const sendRecMail = async (e) => {
+    e.preventDefault();
+    console.log('sending mail')
+    const endpoint = process.env.REACT_APP_BASE_API + '/api/recover_create'
+    let resp = await axios.post(endpoint, {
+      'username': localStorage.getItem('username'),
+      'method': 'voice',
+      'base_url': window.location.origin + '/' + window.appid ,
+    })
+    console.log(resp.data)
+    let magicNotif = document.getElementById('magicNotif')
+    magicNotif.hidden = false
+    setTimeout(()=>{
+      magicNotif.hidden = true
+    }, 2000)
+  }
+
   useEffect(() => {
     if (recorder) {
       recorder.addEventListener('dataavailable', handleDataAvailable);
@@ -174,7 +193,7 @@ const VoiceRcordComponent = () => {
       {state === 'login' && <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>{id}</p>}
       {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 mb-8 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
-        <div className="w-[22em] h-[25em] bg-gray-800 p-2 mb-2 rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-center items-center">
+        <div className="w-[22em] bg-gray-800 p-2 py-5 mb-2 rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-center items-center">
           {state === 'signup' && <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-4 md:text-3xl dark:text-white'>Register your Voice</h1>}
           {state === 'login' && <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-4 md:text-3xl dark:text-white'>Verify your Voice</h1>}
           {voicePlaceholder && (<>
@@ -248,6 +267,12 @@ const VoiceRcordComponent = () => {
               </div>
             )}
           </form>
+
+          {state === 'login' && userMail!='' && <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
+              Recover your account using email? <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>
+              <br/>
+              <span id='magicNotif' hidden={true}>Magic Link sent!</span>
+          </p>}
         </div>
         <div className='flex space-x-4'>
           <button type='button'

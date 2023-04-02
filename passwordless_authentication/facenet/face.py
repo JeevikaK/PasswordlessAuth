@@ -2,7 +2,7 @@ import os
 import numpy as np
 from tensorflow.python.platform import gfile
 import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+# tf.disable_v2_behavior()
 import re
 
 def prewhiten(x):

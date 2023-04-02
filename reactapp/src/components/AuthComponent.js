@@ -120,7 +120,7 @@ const AuthComponent = () => {
                                 <input name="username" id="username" value={username} onChange={(e) => {setUsername(e.target.value); setError(false)}} className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required=""></input>
                                 {error && <p className='text-red-500 text-sm mt-2'>{errorText}</p>}
 
-                                <p className="text-sm font-medium pt-7 pb-4 text-gray-200">Biometric Verification</p>
+                                <p className="text-sm font-medium pt-7 pb-5 text-gray-200">Biometric Verification</p>
                                 <div className="flex justify-center space-x-2">
                                     <button
                                         type="submit"
@@ -140,17 +140,7 @@ const AuthComponent = () => {
                                     </button>
                                 </div>
 
-                                <p className="text-sm font-medium pt-6 text-gray-200">Blockchain Verification</p>
-                                <div className="flex justify-center space-x-2 py-4">
-                                    <button
-                                        type="submit"
-                                        data-te-ripple-init
-                                        data-te-ripple-color="light"
-                                        className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
-                                        Authenticate
-                                    </button>
-                                </div>
-                                <p className="text-sm font-medium text-gray-200 pb-3">FIDO Verification</p>
+                                <p className="text-sm font-medium text-gray-200 pt-7 pb-3">FIDO Verification</p>
                                 <div className="flex justify-center space-x-2">
                                     <button
                                         type="submit"

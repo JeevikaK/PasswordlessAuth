@@ -5,15 +5,13 @@ https://github.com/Alireza-Akhavan
 #import tensorflow as tf
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
+tf.disable_eager_execution()
 import numpy as np
 from facenet import face
 
 class Verification:
-    """
-    تطابق یا عدم تطابق دو چهره
-    """
     def __init__(self):
-        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
+        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.45)
         self.session = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
         self.images_placeholder = ''
         self.embeddings = ''

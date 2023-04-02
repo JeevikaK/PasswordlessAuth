@@ -1,6 +1,6 @@
 #import tensorflow as tf
 import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+# tf.disable_v2_behavior()
 import numpy as np
 from detection.mtcnn import detect_face
 from scipy import misc
@@ -17,7 +17,7 @@ image_size = 160
 
 class Detection:
     def __init__(self):
-        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
+        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.2)
         self.session = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
         self.pnet, self.rnet, self.onet = detect_face.create_mtcnn(self.session, None)
 

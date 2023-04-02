@@ -84,7 +84,7 @@ const VideoRecorder = ({type, setType}) => {
     const formData = new FormData();
     formData.append('username', localStorage.getItem('username'))
     formData.append('face_video', window.blob)
-
+    formData.append('app_id', window.appid)
     try{
       let response = await fetch(process.env.REACT_APP_BASE_API  + '/api/re_reg-face-auth', {
         method: 'POST',
@@ -116,6 +116,7 @@ const VideoRecorder = ({type, setType}) => {
   return (
     <div className='h-screen bg-black overflow-auto'>
         <AppNameComponent />
+        <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>{id}</p>
         {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 mb-8 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
 
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">

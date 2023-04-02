@@ -26,10 +26,15 @@ urlpatterns = [
     path('api/reset_redirect_url', Reset_redirect_url.as_view(), name="Reset_redirect_url"),
     path('api/get_user/<str:username>', Get_user.as_view(), name="Get_user"),
     path('api/get_user_by_token/<str:token>', Get_user_by_token.as_view(), name="Get_user_by_token"),
+    path('api/recover_create', Recovery_create.as_view(), name="Recover_create"),
+    path('api/recover_verify_face', Recovery_verify_face.as_view(), name="Recover_verify"),
+    path('api/recover_verify_voice', Recovery_verify_voice.as_view(), name="Recover_verify"),
     path('api/signup-face-auth', Face_auth_signup.as_view(), name="Face_auth_signup"),
     path('api/login-face-auth', Face_auth_login.as_view(), name="Face_auth_login"),
+    path('api/re_reg-face-auth', Face_auth_Rereg.as_view(), name="Face_auth_Rereg"),
     path('api/signup-voice-auth', Voice_auth_signup.as_view(), name="Voice_auth_signup"),
     path('api/login-voice-auth', Voice_auth_login.as_view(), name="Voice_auth_login"),
+    path('api/re_reg-voice-auth', Voice_auth_Rereg.as_view(), name="Voice_auth_Rereg"),
     # path('api/generate-user-code', Generate_user_code.as_view(), name="Generate_user_code")
 ]
 

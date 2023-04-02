@@ -12,6 +12,7 @@ const VideoRecorder = () => {
   const [loadingContent, setLoadingContent] = useState('Verifying...')
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('Verification failed. Please try again.')
+  const [userMail, setUserMail] = useState('')
 
   const navigate = useNavigate();
   const videoRef = useRef(null);
@@ -24,6 +25,7 @@ const VideoRecorder = () => {
     const endpoint1 = process.env.REACT_APP_BASE_API + '/api/get_user/'.concat(localStorage.getItem('username'))
     axios.get(endpoint1)
       .then((res) => {
+        setUserMail(res.data.recovery_email)
         // console.log(res.data.face_auth)
         if (!res.data.face_auth) {
           navigate('/'.concat(window.appid).concat('/login'))
@@ -63,7 +65,7 @@ const VideoRecorder = () => {
       }).then(() => {
         setTimeout(() =>{
           handleStop()
-        }, 8000)
+        }, 6000)
       })
       .catch((error) => {
         console.error(error);
@@ -85,6 +87,7 @@ const VideoRecorder = () => {
     const formData = new FormData();
     formData.append('username', localStorage.getItem('username'))
     formData.append('face_video', window.blob)
+    formData.append('app_id', window.appid)
 
     try{
       let response = await fetch(process.env.REACT_APP_BASE_API  + '/api/login-face-auth', {
@@ -96,6 +99,8 @@ const VideoRecorder = () => {
       if(json.verified){
         console.log('verified!')
         localStorage.removeItem('username')
+        const redirect = json.redirect_url+'?code='+json.code+'&len='+json.nonce_len+'&mode=video'
+        window.location.href = redirect
       }
       else{
         console.log('not verified!')
@@ -114,9 +119,29 @@ const VideoRecorder = () => {
     navigate(link);
   }
 
+  const sendRecMail = async (e) => {
+    e.preventDefault();
+    console.log('sending mail')
+    e.preventDefault();
+    console.log('sending mail')
+    const endpoint = process.env.REACT_APP_BASE_API + '/api/recover_create'
+    let resp = await axios.post(endpoint, {
+      'username': localStorage.getItem('username'),
+      'method': 'video',
+      'base_url': window.location.origin + '/' + window.appid ,
+    })
+    console.log(resp.data)
+    let magicNotif = document.getElementById('magicNotif')
+    magicNotif.hidden = false
+    setTimeout(()=>{
+      magicNotif.hidden = true
+    }, 2000)
+  }
+
   return (
     <div className='h-screen bg-black overflow-auto'>
         <AppNameComponent />
+        <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>{id}</p>
         {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 mb-8 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
 
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
@@ -146,6 +171,11 @@ const VideoRecorder = () => {
             </form>
 
             {error && <p className='text-red-500 m-6'>{errorMessage}</p>}
+            {userMail!='' && <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
+              Recover your account using email? <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>
+              <br/>
+              <span id='magicNotif' hidden={true}>Magic Link sent!</span>
+            </p>}
 
             </div>
             <div className='flex space-x-4'>

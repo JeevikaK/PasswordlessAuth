@@ -20,20 +20,20 @@ def create_voice_embedding(audiofile):
     if not isinstance(audiofile, str):
         os.remove(f'media/temp-{unikey}.wav')
     return e
-    # pass
+    pass
 
 def verify_voice(e1, e2):
     sim = e1 @ e2
     print("similarity: ", sim)
     return True if sim > THRESH else False
-    # pass
+    pass
 
 def save_voice_embedding(e):
     with open(f'media/registeredVoices/embedding.npy', 'wb') as f:
         np.save(f, e)
-    # pass
+    pass
 
 def load_voice_embedding(name):
     with open(f'media/registeredVoices/{name}.npy', 'rb') as f:
         return np.load(f)
-    # pass
+    pass

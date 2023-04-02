@@ -4,7 +4,7 @@ import axios from 'axios'
 import AppNameComponent from '../AppNameComponent';
 // import RecoveryComponent from '../recoveryComponent';
 
-const VoiceRcordReregComponent = ({type, setType}) => {
+const VoiceRcordReregComponent = ({type, setType, recov}) => {
 
   const navigate = useNavigate();
 
@@ -17,19 +17,18 @@ const VoiceRcordReregComponent = ({type, setType}) => {
   // const [showComponent, setShowComponent] = useState(false);
   // const [recMail, setRecMail] = useState('');
   // const [recPhone, setRecPhone] = useState('');
+  const [recToken, setRecToken] = useState(useParams().token);
   const [loading, setLoading] = useState(false)
   const [loadingContent, setLoadingContent] = useState('')
   const [voicePlaceholder, setVoicePlaceholder] = useState(true)
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('Verification failed. Please try again.')
   
-
-
   window.appid = useParams().id
 
   useEffect(() => {
 
-    console.log(type)
+    console.log(type, recov)
     if (localStorage.getItem('username') === null) {
       navigate('/'.concat(window.appid).concat('/re-register'))
     }
@@ -37,10 +36,11 @@ const VoiceRcordReregComponent = ({type, setType}) => {
     const endpoint1 = process.env.REACT_APP_BASE_API + '/api/get_user/'.concat(localStorage.getItem('username'))
     axios.get(endpoint1)
       .then((res) => {
-        if((type=='pre-auth'  && !res.data.voice_auth) || (type=='post-auth' && res.data.voice_auth) ){
-          navigate('/'.concat(window.appid).concat('/re-register'))
+        if (recov==undefined){
+          if((type=='pre-auth'  && !res.data.voice_auth) || (type=='post-auth' && res.data.voice_auth) ){
+            navigate('/'.concat(window.appid).concat('/re-register'))
+          }
         }
-        
       })
       
     const endpoint2 = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)
@@ -98,12 +98,18 @@ const VoiceRcordReregComponent = ({type, setType}) => {
     setLoadingContent('Registering your voice...')
     e.preventDefault();
     const formData = new FormData();
+    let endpoint = ''
+    if(recov==='recover'){
+      endpoint = process.env.REACT_APP_BASE_API + '/api/recover_verify_voice'
+      formData.append('recovery_token', recToken);
+    }
+    else{
+      endpoint = process.env.REACT_APP_BASE_API + '/api/signup-voice-auth'
+      formData.append('username', localStorage.getItem('username'));
+    }
     formData.append('voice_image', audioBlob, "recording.wav");
-    // formData.append("recovery_email", recMail);
-    // formData.append("recovery_phone_number", recPhone);
-    formData.append('username', localStorage.getItem('username'));
     try {
-      let response = await fetch(process.env.REACT_APP_BASE_API + '/api/signup-voice-auth', {
+      let response = await fetch(endpoint, {
         method: 'POST',
         body: formData,
       })
@@ -223,7 +229,7 @@ const VoiceRcordReregComponent = ({type, setType}) => {
             )}
             
 
-            {audioUrl && type === 'post-auth' && (
+            {audioUrl && type === 'post-auth' && !loading && (
               <button
                 type='submit'
                 onClick={handleSignup}
