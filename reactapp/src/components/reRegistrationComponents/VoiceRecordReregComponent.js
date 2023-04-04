@@ -115,6 +115,7 @@ const VoiceRcordReregComponent = ({type, setType, recov}) => {
       })
       let json = await response.json();
       console.log(json);
+      localStorage.removeItem('username')
       console.log('registered!');
       let link = '/'.concat(window.appid).concat('/login')
       navigate(link);

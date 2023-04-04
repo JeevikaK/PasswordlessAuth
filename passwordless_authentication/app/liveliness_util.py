@@ -96,7 +96,7 @@ def verify_liveness(face_video):
         check_frames = check
         cv2.waitKey(1)
     cap.release()
-    # os.remove(path)
+    os.remove(path)
     for frame in check_frames:  
         print('frame shape', frame.shape)
     if true_count > false_count:

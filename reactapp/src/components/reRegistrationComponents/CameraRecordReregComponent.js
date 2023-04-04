@@ -21,6 +21,7 @@ function Camera({recov}) {
   const [blob, setBlob] = useState(null)
   const [loadingContent, setLoadingContent] = useState('Registering....')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
 
   window.appid = useParams().id
 
@@ -66,6 +67,7 @@ function Camera({recov}) {
     if (!camOn) {
       return
     }
+    setError(false)
     const canvas = document.createElement('canvas');
     canvas.width = videoRef.current.videoWidth;
     canvas.height = videoRef.current.videoHeight;
@@ -108,9 +110,16 @@ function Camera({recov}) {
       })
       let json = await response.json();
       console.log(json)
-      console.log('registered!');
-      let link = '/'.concat(window.appid).concat('/login')
-      navigate(link);
+      if(json.status==='success'){
+        console.log('registered!');
+        localStorage.removeItem('username')
+        console.log('registered!');
+        let link = '/'.concat(window.appid).concat('/login')
+        navigate(link);
+      }
+      else{
+        setError(true)
+      }
     }
     catch (err) {
       console.log(err);
@@ -162,6 +171,7 @@ function Camera({recov}) {
               </div>
             )}
           </form>
+          {error && <p className='text-red-500 m-6'>Face not captured properly, register again!</p>}
         </div>
         <div className='flex space-x-4'>
           <button type='button'

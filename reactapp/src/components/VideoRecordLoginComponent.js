@@ -13,6 +13,7 @@ const VideoRecorder = () => {
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('Verification failed. Please try again.')
   const [userMail, setUserMail] = useState('')
+  const [sendingMail, setSendingMail] = useState(false)
 
   const navigate = useNavigate();
   const videoRef = useRef(null);
@@ -31,7 +32,7 @@ const VideoRecorder = () => {
           navigate('/'.concat(window.appid).concat('/login'))
         }
 
-    })
+      })
 
     const endpoint2 = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)
     axios.get(endpoint2)
@@ -63,9 +64,9 @@ const VideoRecorder = () => {
         mediaRecorder.start();
         videoRef.current.srcObject = stream;
       }).then(() => {
-        setTimeout(() =>{
+        setTimeout(() => {
           handleStop()
-        }, 6000)
+        }, 4500)
       })
       .catch((error) => {
         console.error(error);
@@ -89,20 +90,20 @@ const VideoRecorder = () => {
     formData.append('face_video', window.blob)
     formData.append('app_id', window.appid)
 
-    try{
-      let response = await fetch(process.env.REACT_APP_BASE_API  + '/api/login-face-auth', {
+    try {
+      let response = await fetch(process.env.REACT_APP_BASE_API + '/api/login-face-auth', {
         method: 'POST',
         body: formData,
       })
       let json = await response.json();
       console.log(json)
-      if(json.verified){
+      if (json.verified) {
         console.log('verified!')
         localStorage.removeItem('username')
-        const redirect = json.redirect_url+'?code='+json.code+'&len='+json.nonce_len+'&mode=video'
+        const redirect = json.redirect_url + '?code=' + json.code + '&len=' + json.nonce_len + '&mode=video'
         window.location.href = redirect
       }
-      else{
+      else {
         console.log('not verified!')
         setError(true)
       }
@@ -114,80 +115,83 @@ const VideoRecorder = () => {
     setRecording(false);
   }
 
-  function goBack(){
+  function goBack() {
     let link = '/'.concat(window.appid).concat('/login')
     navigate(link);
   }
 
   const sendRecMail = async (e) => {
     e.preventDefault();
-    console.log('sending mail')
-    e.preventDefault();
+    setSendingMail(true)
     console.log('sending mail')
     const endpoint = process.env.REACT_APP_BASE_API + '/api/recover_create'
     let resp = await axios.post(endpoint, {
       'username': localStorage.getItem('username'),
       'method': 'video',
-      'base_url': window.location.origin + '/' + window.appid ,
+      'base_url': window.location.origin + '/' + window.appid,
     })
     console.log(resp.data)
     let magicNotif = document.getElementById('magicNotif')
     magicNotif.hidden = false
-    setTimeout(()=>{
+    setSendingMail(false)
+    setTimeout(() => {
       magicNotif.hidden = true
     }, 2000)
   }
 
   return (
     <div className='h-screen bg-black overflow-auto'>
-        <AppNameComponent />
-        <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>{id}</p>
-        {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 mb-8 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
+      <AppNameComponent />
+      <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>{id}</p>
+      {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 mb-8 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
 
-        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
-            <div className="bg-gray-800 p-8 m-8 rounded-xl">
-            <h1 className='text-xl text-center font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-4 md:text-3xl dark:text-white'>Verify your Face</h1>
-            <form className='flex flex-col items-center justify-center'>
-                {!recording && 
-                    <button 
-                        onClick={handleStart}
-                        data-te-ripple-init
-                        data-te-ripple-color="light"
-                        className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-300 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
-                        {error ? 'Record Again' : 'Start Recording'}
-                    </button>
-                }
-                
-                {loading && (
-                    <div className='flex flex-col items-center justify-center'>
-                      <p className='text-gray-400'>{loadingContent}</p>
-                    </div>
-                )}
-                {!loading && recording &&  (
-                    <div>
-                      <video ref={videoRef} autoPlay poster={default_image} style={{ width: '500px'}}/>
-                    </div>
-                )}
-            </form>
-
-            {error && <p className='text-red-500 m-6'>{errorMessage}</p>}
-            {userMail!='' && <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
-              Recover your account using email? <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>
-              <br/>
-              <span id='magicNotif' hidden={true}>Magic Link sent!</span>
-            </p>}
-
-            </div>
-            <div className='flex space-x-4'>
-              <button type='button'
-                  onClick={goBack}
-                  data-te-ripple-init
-                  data-te-ripple-color="light"
-                  className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
-                  Back
+      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
+        <div className="bg-gray-800 p-8 m-8 rounded-xl">
+          <h1 className='text-xl text-center font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-4 md:text-3xl dark:text-white'>Verify your Face</h1>
+          <form className='flex flex-col items-center justify-center'>
+            {!recording &&
+              <button
+                onClick={handleStart}
+                data-te-ripple-init
+                data-te-ripple-color="light"
+                className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-300 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
+                {error ? 'Record Again' : 'Start Recording'}
               </button>
-            </div>
+            }
+
+            {loading && (
+              <div className='flex flex-col items-center justify-center'>
+                <p className='text-gray-400'>{loadingContent}</p>
+              </div>
+            )}
+            {!loading && recording && (
+              <div>
+                <video ref={videoRef} autoPlay poster={default_image} style={{ width: '500px' }} />
+              </div>
+            )}
+          </form>
+
+          {error && <p className='text-red-500 m-6'>{errorMessage}</p>}
+          {userMail != '' &&  <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
+            Recover your account using email? 
+            {!sendingMail && <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>}
+            <br />
+            {sendingMail && <span>Sending...</span>}
+            <br/>
+            <span id='magicNotif' hidden={true}>Magic Link sent!</span>
+          </p>}
+
         </div>
+        <div className='flex space-x-4'>
+          <button type='button'
+            onClick={goBack}
+            data-te-ripple-init
+            data-te-ripple-color="light"
+            className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
+            Back
+          </button>
+        </div>
+      </div>
 
     </div>
   );

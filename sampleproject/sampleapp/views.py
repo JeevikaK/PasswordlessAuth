@@ -3,6 +3,7 @@ from nopass.main import *
 from django.conf import settings
 import json
 
+
 npass = NoPass(settings.APP_ID, settings.APP_SECRET)
 
 def index(request):

@@ -4,6 +4,7 @@ import uuid
 import rsa
 import smtplib, ssl
 from email.message import EmailMessage
+from .models import *
 
 port = 587  # For starttls
 smtp_server = "smtp.gmail.com"
@@ -42,4 +43,14 @@ def send_email(receiver_email, token, method, base_url):
         print(e)
         print("Email not sent")
         return False
+    
+def generate_token():
+    token = str(uuid.uuid4().hex)
+    while True:
+        try:
+            user = User.objects.get(token=token)
+            token = str(uuid.uuid4().hex)
+            print("token already exists")
+        except User.DoesNotExist:
+            return token
     

@@ -89,7 +89,6 @@ class Get_user(APIView):
                         "face_auth": user.face_auth,
                         "voice_auth": user.voice_auth,
                         "fido_auth": user.fido_auth,
-                        "blockchain_auth": user.blockchain_auth,
                         "userExists": True,
                         "recovery_email": user.recovery_email,
                         "recovery_phone_number": user.recovery_phone_number,
@@ -214,6 +213,8 @@ class Face_auth_signup(APIView):
         try:
             user = User.objects.get(username=request.data.get("username"))
             embedding = create_face_embedding(request.data.get("face_image"))
+            if embedding is None:
+                return Response({"status": "failed"})
             save_face_embedding(embedding)
             user.face_image = File(open("media/registeredFaces/embedding.npy", "rb"))
             user.face_auth = True
@@ -223,6 +224,8 @@ class Face_auth_signup(APIView):
             app_id = request.data.get("app_id")
             app = Applications.objects.get(app_id=app_id)
             embedding = create_face_embedding(request.data.get("face_image"))
+            if embedding is None:
+                return Response({"status": "failed"})
             save_face_embedding(embedding)
             request.data.update({"face_auth": True})
             request.data.update(
@@ -232,6 +235,8 @@ class Face_auth_signup(APIView):
                     )
                 }
             )
+            token = generate_token()
+            request.data.update({"token": token})
             serializer = UserSerializer(data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
@@ -325,6 +330,8 @@ class Voice_auth_signup(APIView):
             save_voice_embedding(embedding)
             request.data.update({"voice_auth": True})
             request.data.update({"voice_image": File( open( 'media/registeredVoices/embedding.npy' ,'rb'))})
+            token = generate_token()
+            request.data.update({"token": token})
             serializer = UserSerializer(data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()

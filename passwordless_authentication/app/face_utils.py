@@ -21,6 +21,8 @@ def create_face_embedding(face_image):
 
 def create_embedding(img):
     detections = embedder.extract(img, threshold=0.95)
+    if len(detections) == 0:
+        return None 
     return detections[0].get('embedding')
     pass
  
@@ -45,6 +47,8 @@ def verify(emb1, emb2):
 
 def verify_face(frames, username):
     claimed_emb = load_face_embedding(username)
+    if claimed_emb is None:
+        return False
     test_emb = create_embedding(frames[random.randint(0, len(frames) - 1)])
     if not verify(test_emb, claimed_emb):
         return False

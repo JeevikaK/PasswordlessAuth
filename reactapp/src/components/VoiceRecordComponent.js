@@ -24,6 +24,7 @@ const VoiceRcordComponent = () => {
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('Verification failed. Please try again.')
   const [userMail, setUserMail] = useState('')
+  const [sendingMail, setSendingMail] = useState(false)
 
 
   window.appid = useParams().id
@@ -161,6 +162,7 @@ const VoiceRcordComponent = () => {
   const sendRecMail = async (e) => {
     e.preventDefault();
     console.log('sending mail')
+    setSendingMail(true)
     const endpoint = process.env.REACT_APP_BASE_API + '/api/recover_create'
     let resp = await axios.post(endpoint, {
       'username': localStorage.getItem('username'),
@@ -170,6 +172,7 @@ const VoiceRcordComponent = () => {
     console.log(resp.data)
     let magicNotif = document.getElementById('magicNotif')
     magicNotif.hidden = false
+    setSendingMail(false)
     setTimeout(()=>{
       magicNotif.hidden = true
     }, 2000)
@@ -269,7 +272,10 @@ const VoiceRcordComponent = () => {
           </form>
 
           {state === 'login' && userMail!='' && <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
-              Recover your account using email? <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>
+              Recover your account using email? 
+              {!sendingMail && <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>}<br/>
+              <br/>
+                {sendingMail && <span>Sending...</span>}
               <br/>
               <span id='magicNotif' hidden={true}>Magic Link sent!</span>
           </p>}
