@@ -15,6 +15,7 @@ from .crypt import *
 
 # Create your views here.
 
+
 class Register_app(APIView):
     def post(self, request):
         data = {
@@ -47,7 +48,8 @@ class Authenticate_app(APIView):
             )
         else:
             return Response({"status": "failed"})
-        
+
+
 class Reset_redirect_url(APIView):
     def post(self, request):
         app_id = request.data.get("app_id")
@@ -84,36 +86,38 @@ class Get_user(APIView):
         try:
             user = User.objects.get(username=username)
             return Response(
-                    {
-                        "username": user.username,
-                        "face_auth": user.face_auth,
-                        "voice_auth": user.voice_auth,
-                        "fido_auth": user.fido_auth,
-                        "userExists": True,
-                        "recovery_email": user.recovery_email,
-                        "recovery_phone_number": user.recovery_phone_number,
-                    })
+                {
+                    "username": user.username,
+                    "face_auth": user.face_auth,
+                    "voice_auth": user.voice_auth,
+                    "fido_auth": user.fido_auth,
+                    "userExists": True,
+                    "recovery_email": user.recovery_email,
+                    "recovery_phone_number": user.recovery_phone_number,
+                }
+            )
         except User.DoesNotExist:
             return Response({"userExists": False})
-        
+
 
 class Get_user_by_token(APIView):
     def get(self, request, token):
         try:
             user = User.objects.get(token=token)
             return Response(
-                    {
-                        "username": user.username,
-                        "userExists": True,
-                    })
+                {
+                    "username": user.username,
+                    "userExists": True,
+                }
+            )
         except User.DoesNotExist:
             return Response({"userExists": False})
-        
+
 
 class Recovery_create(APIView):
     def post(self, request):
         try:
-            #get username, method, base_url
+            # get username, method, base_url
             user = User.objects.get(username=request.data.get("username"))
             token = uuid.uuid4().hex
             data = {
@@ -122,10 +126,15 @@ class Recovery_create(APIView):
             }
             serializer = RecoveryTokenSerializer(data=data)
             if serializer.is_valid(raise_exception=True):
-                sent = send_email(user.recovery_email, token, request.data.get("method"), request.data.get("base_url"))
+                sent = send_email(
+                    user.recovery_email,
+                    token,
+                    request.data.get("method"),
+                    request.data.get("base_url"),
+                )
                 if not sent:
                     return Response({"status": "failed"})
-                
+
                 serializer.save()
                 return Response(
                     {
@@ -135,12 +144,12 @@ class Recovery_create(APIView):
                 )
         except User.DoesNotExist:
             return Response({"status": "failed"})
-        
+
 
 class Recovery_verify_face(APIView):
     def post(self, request):
         try:
-            #get recovery_token, face_image
+            # get recovery_token, face_image
             token = request.data.get("recovery_token")
             try:
                 recovery_token = RecoveryToken.objects.get(token=token)
@@ -151,12 +160,14 @@ class Recovery_verify_face(APIView):
             recovery_token.valid = False
             recovery_token.save()
             username = recovery_token.username
-            user = User.objects.get(username = username)
+            user = User.objects.get(username=username)
             if user.face_auth:
                 os.remove(f"media/registeredFaces/{username}.npy")
                 embedding = create_face_embedding(request.data.get("face_image"))
                 save_face_embedding(embedding)
-                user.face_image = File(open("media/registeredFaces/embedding.npy", "rb"))
+                user.face_image = File(
+                    open("media/registeredFaces/embedding.npy", "rb")
+                )
                 user.save()
                 return Response(
                     {
@@ -164,17 +175,22 @@ class Recovery_verify_face(APIView):
                         "recovery_token": token,
                     }
                 )
-              
+
             else:
-                return Response({"status": "failed", "message": "User does not have face auth enabled"})
+                return Response(
+                    {
+                        "status": "failed",
+                        "message": "User does not have face auth enabled",
+                    }
+                )
         except User.DoesNotExist:
             return Response({"status": "failed", "message": "User does not exist"})
-        
+
 
 class Recovery_verify_voice(APIView):
     def post(self, request):
         try:
-            #get recovery_token, voice_image
+            # get recovery_token, voice_image
             token = request.data.get("recovery_token")
             try:
                 recovery_token = RecoveryToken.objects.get(token=token)
@@ -185,12 +201,14 @@ class Recovery_verify_voice(APIView):
             recovery_token.valid = False
             recovery_token.save()
             username = recovery_token.username
-            user = User.objects.get(username = username)
+            user = User.objects.get(username=username)
             if user.voice_auth:
                 os.remove(f"media/registeredVoices/{username}.npy")
                 embedding = create_voice_embedding(request.data.get("voice_image"))
                 save_voice_embedding(embedding)
-                user.voice_image = File( open( 'media/registeredVoices/embedding.npy' ,'rb'))
+                user.voice_image = File(
+                    open("media/registeredVoices/embedding.npy", "rb")
+                )
                 user.save()
                 return Response(
                     {
@@ -199,11 +217,15 @@ class Recovery_verify_voice(APIView):
                     }
                 )
             else:
-                return Response({"status": "failed", "message": "User does not have voice auth enabled"})
+                return Response(
+                    {
+                        "status": "failed",
+                        "message": "User does not have voice auth enabled",
+                    }
+                )
 
         except User.DoesNotExist:
             return Response({"status": "failed", "message": "User does not exist"})
-
 
 
 class Face_auth_signup(APIView):
@@ -229,11 +251,7 @@ class Face_auth_signup(APIView):
             save_face_embedding(embedding)
             request.data.update({"face_auth": True})
             request.data.update(
-                {
-                    "face_image": File(
-                        open("media/registeredFaces/embedding.npy", "rb")
-                    )
-                }
+                {"face_image": File(open("media/registeredFaces/embedding.npy", "rb"))}
             )
             token = generate_token()
             request.data.update({"token": token})
@@ -267,12 +285,17 @@ class Face_auth_login(APIView):
             app = Applications.objects.get(app_id=app_id)
             if user.face_auth:
                 user_ob = UserSerializer(user)
-                is_live, check_frames = verify_liveness(face_video)
-                if not is_live:
-                    return Response({"verified": False, "live": False})
-                if verify_face(check_frames, username):
+                if verify_liveliness_and_face(face_video, username):
                     code, nonce_len = generate_code(user.token, app.public_key)
-                    return Response({"verified": True, **user_ob.data, "code": code, "nonce_len": nonce_len, "redirect_url": app.redirection_url})
+                    return Response(
+                        {
+                            "verified": True,
+                            **user_ob.data,
+                            "code": code,
+                            "nonce_len": nonce_len,
+                            "redirect_url": app.redirection_url,
+                        }
+                    )
                 else:
                     return Response({"verified": False})
             else:
@@ -293,10 +316,7 @@ class Face_auth_Rereg(APIView):
             app = Applications.objects.get(app_id=app_id)
             if user.face_auth:
                 user_ob = UserSerializer(user)
-                is_live, check_frames = verify_liveness(face_video)
-                if not is_live:
-                    return Response({"verified": False, "live": False})
-                if verify_face(check_frames, username):
+                if verify_liveliness_and_face(face_video, username):
                     return Response(
                         {
                             "verified": True,
@@ -319,7 +339,7 @@ class Voice_auth_signup(APIView):
             user = User.objects.get(username=request.data.get("username"))
             embedding = create_voice_embedding(request.data.get("voice_image"))
             save_voice_embedding(embedding)
-            user.voice_image = File( open( 'media/registeredVoices/embedding.npy' ,'rb'))
+            user.voice_image = File(open("media/registeredVoices/embedding.npy", "rb"))
             user.voice_auth = True
             user.save()
             return Response({"status": "success"})
@@ -329,7 +349,13 @@ class Voice_auth_signup(APIView):
             embedding = create_voice_embedding(request.data.get("voice_image"))
             save_voice_embedding(embedding)
             request.data.update({"voice_auth": True})
-            request.data.update({"voice_image": File( open( 'media/registeredVoices/embedding.npy' ,'rb'))})
+            request.data.update(
+                {
+                    "voice_image": File(
+                        open("media/registeredVoices/embedding.npy", "rb")
+                    )
+                }
+            )
             token = generate_token()
             request.data.update({"token": token})
             serializer = UserSerializer(data=request.data)
@@ -337,7 +363,15 @@ class Voice_auth_signup(APIView):
                 serializer.save()
                 user = User.objects.get(username=request.data.get("username"))
                 code, nonce_len = generate_code(user.token, app.public_key)
-                return Response({**serializer.data, "status": "success", "code": code, "nonce_len": nonce_len, "redirect_url": app.redirection_url})
+                return Response(
+                    {
+                        **serializer.data,
+                        "status": "success",
+                        "code": code,
+                        "nonce_len": nonce_len,
+                        "redirect_url": app.redirection_url,
+                    }
+                )
             else:
                 return Response({"status": "failed"})
 
@@ -358,7 +392,15 @@ class Voice_auth_login(APIView):
                 embedding_reg = load_voice_embedding(user.username)
                 if verify_voice(embedding_test, embedding_reg):
                     code, nonce_len = generate_code(user.token, app.public_key)
-                    return Response({"verified": True, **user_ob.data, "code": code, "nonce_len": nonce_len, "redirect_url": app.redirection_url})
+                    return Response(
+                        {
+                            "verified": True,
+                            **user_ob.data,
+                            "code": code,
+                            "nonce_len": nonce_len,
+                            "redirect_url": app.redirection_url,
+                        }
+                    )
                 else:
                     return Response({"verified": False})
             else:
@@ -392,7 +434,7 @@ class Voice_auth_Rereg(APIView):
                 return Response({"verified": False})
         except User.DoesNotExist:
             return Response({"status": "NotExists"})
-        
+
 
 # class Generate_user_code(APIView):
 #     def get(self, request):

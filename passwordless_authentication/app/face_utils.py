@@ -1,14 +1,19 @@
-import time
-from keras_facenet import FaceNet
 import numpy as np
-from scipy.spatial import distance
 import cv2
-import random
+import time
+
+import FaceToolKit as ftk
+import DetectionToolKit as dtk
+
+verification_threshhold = 1.188
+image_size = 160
 
 
-verification_threshhold = 0.85
 start = time.time()
-embedder = FaceNet()
+v = ftk.Verification()
+v.load_model("./models/20180204-160909/")
+v.initial_input_output_tensors()
+d = dtk.Detection()
 print(f"\nFacenet Model loaded in {time.time() - start} seconds.\n")
 
 
@@ -17,15 +22,15 @@ def create_face_embedding(face_image):
     np_array = np.frombuffer(img_bytes, np.uint8)
     img = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
     return create_embedding(img)
-    pass
+    pass    
+
 
 def create_embedding(img):
-    detections = embedder.extract(img, threshold=0.95)
-    if len(detections) == 0:
-        return None 
-    return detections[0].get('embedding')
+    aligned = d.align(img, False)[0]
+    return v.img_to_encoding(aligned, image_size)
     pass
- 
+
+
 def save_face_embedding(embedding):
     with open(f"media/registeredFaces/embedding.npy", "wb") as f:
         np.save(f, embedding)
@@ -36,21 +41,27 @@ def load_face_embedding(name):
         return np.load(f)
     pass
 
+
+def distance(emb1, emb2):
+    diff = np.subtract(emb1, emb2)
+    return np.sum(np.square(diff))
+    pass
+
+
 def verify(emb1, emb2):
-    dist = distance.euclidean(emb1, emb2)
-    print('distance : ', dist)
+    dist = distance(emb1, emb2)
+    print("distance", dist)
     if dist < verification_threshhold:
         return True
     else:
         return False
     pass
 
-def verify_face(frames, username):
+def verify_face(frame, username):
     claimed_emb = load_face_embedding(username)
-    if claimed_emb is None:
-        return False
-    test_emb = create_embedding(frames[random.randint(0, len(frames) - 1)])
+    test_emb = create_embedding(frame)
     if not verify(test_emb, claimed_emb):
         return False
     return True
-    pass
+
+
