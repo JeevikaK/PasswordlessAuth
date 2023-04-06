@@ -3,7 +3,7 @@ import AppNameComponent from './AppNameComponent';
 import default_image from '../other/camera.jpg'
 import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom';
-
+import AlertComponent from './AlertComponent';
 
 const VideoRecorder = () => {
   const [id, setId] = useState('')
@@ -139,6 +139,10 @@ const VideoRecorder = () => {
     }, 2000)
   }
 
+  const alertClick = () => {
+    <AlertComponent imageUrl="https://example.com/image.jpg"/>
+  }
+
   return (
     <div className='h-screen bg-black overflow-auto'>
       <AppNameComponent />
@@ -174,6 +178,7 @@ const VideoRecorder = () => {
           {error && <p className='text-red-500 m-6'>{errorMessage}</p>}
           {userMail != '' &&  <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
             Recover your account using email? 
+            <br></br>
             {!sendingMail && <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>}
             <br />
             {sendingMail && <span>Sending...</span>}
@@ -191,6 +196,7 @@ const VideoRecorder = () => {
             Back
           </button>
         </div>
+        <AlertComponent imageUrl="https://example.com/image.jpg" message="Don't have a Web Camera? Login through phone"/>
       </div>
 
     </div>

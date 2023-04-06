@@ -77,6 +77,16 @@ const AuthComponent = () => {
         localStorage.setItem('username', username)
     }
 
+    async function handleInAppClick(e) {
+        e.preventDefault()
+        let status = await checkUser(username, state, 'face')
+        if(!status)
+            return
+        let inAppLink = '/'.concat(window.appid).concat('/').concat(state).concat('/inapp')
+        navigate(inAppLink);
+        localStorage.setItem('username', username)
+    }
+
     useEffect(() => {
         const endpoint = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)
         axios.get(endpoint)
@@ -140,10 +150,11 @@ const AuthComponent = () => {
                                     </button>
                                 </div>
 
-                                <p className="text-sm font-medium text-gray-200 pt-7 pb-3">FIDO Verification</p>
+                                <p className="text-sm font-medium text-gray-200 pt-7 pb-3">In App Authentication</p>
                                 <div className="flex justify-center space-x-2">
                                     <button
                                         type="submit"
+                                        onClick={handleInAppClick}
                                         data-te-ripple-init
                                         data-te-ripple-color="light"
                                         className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">

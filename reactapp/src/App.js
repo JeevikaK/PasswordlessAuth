@@ -11,6 +11,7 @@ import VideoRecord_postReg from './routes/reRegistrationRoutes/VideoRecord_postR
 import VideoLoginRoute from './routes/VideoLoginRoute';
 import VoiceRecord_Recovery from './routes/recoveryRoutes/RecoveryVoice';
 import VideoRecord_Recovery from './routes/recoveryRoutes/RecoveryVideo';
+import QrCodeComponent from './components/QrCodeComponent';
 
 // import VideoRecorder from './components/Websocket';
 
@@ -27,6 +28,7 @@ class App extends React.Component {
           <Route path=':id/post-auth/video' element={<VideoRecord_postReg />}></Route>
           <Route path=':id/:state' element={<AuthRoute/>}></Route>
           <Route path=':id/:state/voice' element={<VoiceRecord/>}></Route>
+          <Route path=':id/:state/inapp' element={<QrCodeComponent />}></Route>
           <Route path=':id/signup/video' element={<VideoRecord />}></Route>
           <Route path=':id/login/video' element={<VideoLoginRoute />}></Route>
           <Route path=':id/recover/voice/:token' element={<VoiceRecord_Recovery/>}></Route>
