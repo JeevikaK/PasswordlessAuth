@@ -65,7 +65,7 @@ const AlertComponent = ({ imageUrl, message }) => {
           >
               <p className='font-bold leading-tight tracking-tight text-gray-800 mb-3'>Scan the QR Code using the app!</p>
               <div className='w-full'>{qrcode}</div>
-              <p className='text-sm leading-tight tracking-tight text-slate-200 mt-3 text-center'>Do not close the window until authenticated</p>
+              <p className='text-sm leading-tight tracking-tight text-gray-800 mt-3 text-center'>Do not close the window until authenticated</p>
 
                   <button type='button'
                   data-te-ripple-init
