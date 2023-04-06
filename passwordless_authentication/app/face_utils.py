@@ -1,11 +1,13 @@
 import numpy as np
 import cv2
 import time
+import warnings
 
 import FaceToolKit as ftk
 import DetectionToolKit as dtk
 
-verification_threshhold = 1.188
+
+verification_threshhold = 1.05
 image_size = 160
 
 
@@ -15,7 +17,7 @@ v.load_model("./models/20180204-160909/")
 v.initial_input_output_tensors()
 d = dtk.Detection()
 print(f"\nFacenet Model loaded in {time.time() - start} seconds.\n")
-
+warnings.filterwarnings("ignore")
 
 def create_face_embedding(face_image):
     img_bytes = face_image.read()
@@ -26,7 +28,10 @@ def create_face_embedding(face_image):
 
 
 def create_embedding(img):
-    aligned = d.align(img, False)[0]
+    detections = d.align(img, False)
+    if len(detections) == 0:
+        return None
+    aligned = detections[0]
     return v.img_to_encoding(aligned, image_size)
     pass
 
@@ -60,6 +65,9 @@ def verify(emb1, emb2):
 def verify_face(frame, username):
     claimed_emb = load_face_embedding(username)
     test_emb = create_embedding(frame)
+    if test_emb is None:
+        print("No face detected")
+        return False
     if not verify(test_emb, claimed_emb):
         return False
     return True

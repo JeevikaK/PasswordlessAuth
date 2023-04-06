@@ -164,6 +164,11 @@ class Recovery_verify_face(APIView):
             if user.face_auth:
                 os.remove(f"media/registeredFaces/{username}.npy")
                 embedding = create_face_embedding(request.data.get("face_image"))
+                if embedding is None:
+                    return Response({
+                            "status": "failed",
+                            "message": "Face not detected",
+                        })
                 save_face_embedding(embedding)
                 user.face_image = File(
                     open("media/registeredFaces/embedding.npy", "rb")
