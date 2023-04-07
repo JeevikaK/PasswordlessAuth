@@ -246,8 +246,8 @@ class Inapp_signup(APIView):
             app = Applications.objects.get(app_id=app_id)
             token = generate_token()
             public_key = request.data.get("public_key")
-            with open('public.pem', 'rb') as f:
-                public_key = f.read().decode('utf-8')
+            # with open('public.pem', 'rb') as f:
+            #     public_key = f.read().decode('utf-8')
             print(public_key)
             data = {
                 "username": request.data.get("username"),
@@ -279,8 +279,8 @@ class Inapp_login(APIView):
         username = request.data.get("username")
         private_key = request.data.get("private_key")
         app_id = request.data.get("app_id")
-        with open('private.pem', 'rb') as f:
-            private_key = f.read().decode('utf-8')
+        # with open('private.pem', 'rb') as f:
+        #     private_key = f.read().decode('utf-8')
         try:
             user = User.objects.get(username=username)
             app = Applications.objects.get(app_id=app_id)

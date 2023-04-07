@@ -63,8 +63,8 @@ def generate_token():
         
 
 def verify_signature(private_key, public_key):
-    public_key = load_pem_public_key(public_key.encode('utf8'), backend=default_backend())
-    private_key = load_pem_private_key(private_key.encode('utf8'), password=None, backend=default_backend())
+    public_key = load_pem_public_key(public_key.encode(), backend=default_backend())
+    private_key = load_pem_private_key(private_key.encode(), password=None, backend=default_backend())
     message = b"Hello World"
     signature = private_key.sign(message, padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),hashes.SHA256())
     try:
