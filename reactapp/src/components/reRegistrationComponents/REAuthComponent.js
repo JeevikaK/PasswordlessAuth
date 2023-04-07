@@ -45,6 +45,11 @@ const REAuthComponent = ({type}) => {
                             setErrorText('Face authentication is not enabled for this user!')
                             return false
                         }
+                        if(!response.data.inapp_auth && authType === 'inapp'){
+                            setError(true)
+                            setErrorText('In-app authentication is not enabled for this user!')
+                            return false
+                        }
                     }
                 
                     break
@@ -57,6 +62,11 @@ const REAuthComponent = ({type}) => {
                     if(authType === 'face' && response.data.face_auth){
                         setError(true)
                         setErrorText('Face authentication is already registered for this user!')
+                        return false
+                    }
+                    if(authType === 'inapp' && response.data.inapp_auth){
+                        setError(true)
+                        setErrorText('In-app authentication is already registered for this user!')
                         return false
                     }
                     break
@@ -94,6 +104,23 @@ const REAuthComponent = ({type}) => {
         else if(type==='post-auth'){
             let vidLink = '/'.concat(window.appid).concat('/post-auth').concat('/video')
             navigate(vidLink);
+        }
+        
+        localStorage.setItem('username', username)
+    }
+
+    async function handleInAppClick(e) {
+        e.preventDefault()
+        let status = await checkUser(username, type, 'inapp')
+        if(!status)
+            return
+        if(type==='pre-auth'){
+            let inAppLink = '/'.concat(window.appid).concat('/pre-auth').concat('/inapp')
+            navigate(inAppLink);
+        }
+        else if(type==='post-auth'){
+            let inAppLink = '/'.concat(window.appid).concat('/post-auth').concat('/inapp')
+            navigate(inAppLink);
         }
         
         localStorage.setItem('username', username)
@@ -154,10 +181,11 @@ const REAuthComponent = ({type}) => {
                                 </div>
 
                                 
-                                <p className="text-sm font-medium text-gray-200 pt-7 pb-3">FIDO Verification</p>
+                                <p className="text-sm font-medium text-gray-200 pt-7 pb-3">In App Authentication</p>
                                 <div className="flex justify-center space-x-2">
                                     <button
                                         type="submit"
+                                        onClick={handleInAppClick}
                                         data-te-ripple-init
                                         data-te-ripple-color="light"
                                         className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
