@@ -11,7 +11,6 @@ const REAuthComponent = ({type}) => {
     const navigate = useNavigate();
     const [error, setError] = useState(false)
     const [errorText, setErrorText] = useState('')
-
     
     window.appid = useParams().id
 

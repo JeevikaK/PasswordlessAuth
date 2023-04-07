@@ -4,6 +4,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import AppNameComponent from './AppNameComponent';
 import axios from 'axios'
 import RecoveryComponent from './recoveryComponent';
+import { w3cwebsocket as W3CWebSocket, connection } from "websocket";
 
 const CustomAlert = () => {
   const [id, setId] = useState('')
@@ -40,17 +41,39 @@ const CustomAlert = () => {
       .catch((err) => console.log(err))
   }, [])
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async() => {
     let channel_id = Math.floor(Date.now()+Math.random())
     console.log(id)
     let endpoint = process.env.REACT_APP_BASE_API + '/'.concat(channel_id).concat('/').concat(window.appid).concat('/').concat(localStorage.getItem('username')).concat('/').concat(state).concat('/inapp')
-    console.log(endpoint)
     setUrl(endpoint)
-    console.log(url)
+    window.connection = new W3CWebSocket('ws://localhost:8000/ws/confirmation/' + channel_id + '/');
     setShowAlert(true);
+    window.connection.onopen = () => {
+      console.log('WebSocket Client Connected');
+    }
+
+    window.connection.onmessage = (message) => {
+      const dataFromServer = JSON.parse(message.data);
+      console.log('got reply! ', dataFromServer.type);
+      if (dataFromServer) {
+        console.log(dataFromServer)
+      }
+    };
   };
 
+  const testSocket = () => {
+    console.log('test')
+    window.connection.send(JSON.stringify({
+      'type': 'chat_message',
+      'message': {
+        'name': 'test',
+        'message': 'test'
+      }
+    }));
+  }
+
   const handleAlertClose = () => {
+    window.connection.close()
     setShowAlert(false);
   };
 
@@ -62,8 +85,7 @@ const CustomAlert = () => {
   const qrcode = (
     <QRCodeCanvas
       id="qrCode"
-      // value={url}
-      value = 'http://127.0.0.1:8000/1680846608308/38e9c4108b74437081708105c34db694/anon/signup/inapp'
+      value={url}
       size={300}
       bgColor={"#ffffff"}
       level={"H"}
@@ -97,6 +119,7 @@ const CustomAlert = () => {
           <p className='font-bold text-slate-200 mb-3 text-center'>Scan QR Code through app to authenticate</p>
           <div className='flex justify-center border-8'>{qrcode}</div>
           <p className='text-sm leading-tight tracking-tight text-slate-200 mt-3 text-center'>Do not close the QR Code until authenticated</p>
+          <button type='button' onClick={testSocket}>Test me!</button>
           <div className='flex justify-center'>
             <button type='button'
                 onClick={handleAlertClose}

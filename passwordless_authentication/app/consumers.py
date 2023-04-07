@@ -14,10 +14,10 @@ class AuthConsumer(WebsocketConsumer):
             self.channel_group_id,
             self.channel_name
         )
-
         self.accept()
 
     def disconnect(self, close_code):
+        print("disconnect")
         # Leave room group
         async_to_sync(self.channel_layer.group_discard)(
             self.channel_group_id,
@@ -26,18 +26,17 @@ class AuthConsumer(WebsocketConsumer):
 
     # Receive message from WebSocket
     def receive(self, text_data):
-        print("receive"  )
+        print("receive")
         text_data_json = json.loads(text_data)
+        type = text_data_json['type']
         message = text_data_json['message']
-        name = text_data_json['name']
 
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
+            self.channel_group_id,
             {
-                'type': 'chat_message',
+                'type': type,
                 'message': message,
-                'name': name
             }
         )
 
@@ -45,12 +44,10 @@ class AuthConsumer(WebsocketConsumer):
     def chat_message(self, event):
         print("chat_message"  )
         message = event['message']
-        name = event['name']
         type = event['type']
 
         # Send message to WebSocket
         self.send(text_data=json.dumps({
             'message': message,
-            'name': name,
             'type': type
         }))
