@@ -6,9 +6,9 @@ from .serializer import *
 import uuid
 from secrets import *
 from rest_framework.parsers import MultiPartParser, FormParser
-from .voice_utils import *
-from .face_utils import *
-from .liveliness_util import *
+# from .voice_utils import *
+# from .face_utils import *
+# from .liveliness_util import *
 from django.core.files import File
 from .crypt import *
 
@@ -90,7 +90,7 @@ class Get_user(APIView):
                     "username": user.username,
                     "face_auth": user.face_auth,
                     "voice_auth": user.voice_auth,
-                    "fido_auth": user.fido_auth,
+                    "inapp_auth": user.inapp_auth,
                     "userExists": True,
                     "recovery_email": user.recovery_email,
                     "recovery_phone_number": user.recovery_phone_number,
@@ -231,6 +231,78 @@ class Recovery_verify_voice(APIView):
 
         except User.DoesNotExist:
             return Response({"status": "failed", "message": "User does not exist"})
+        
+
+class Inapp_signup(APIView):
+    def post(self, request):
+        try:
+            user = User.objects.get(username=request.data.get("username"))
+            user.inapp_public_key = request.data.get("public_key")
+            user.inapp_auth = True
+            user.save()
+            return Response({"status": "success"})
+        except User.DoesNotExist:
+            app_id = request.data.get("app_id")
+            app = Applications.objects.get(app_id=app_id)
+            token = generate_token()
+            public_key = request.data.get("public_key")
+            with open('public.pem', 'rb') as f:
+                public_key = f.read().decode('utf-8')
+            print(public_key)
+            data = {
+                "username": request.data.get("username"),
+                "token": token,
+                "inapp_public_key": public_key,
+                "inapp_auth": True,
+                "recovery_email": request.data.get("recovery_email"),
+            }
+            serializer = UserSerializer(data=data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                user = User.objects.get(username=request.data.get("username"))
+                code, nonce_len = generate_code(user.token, app.public_key)
+                return Response(
+                    {
+                        **serializer.data,
+                        "status": "success",
+                        "code": code,
+                        "nonce_len": nonce_len,
+                        "redirect_url": app.redirection_url,
+                    }
+                )
+            else:
+                return Response({"status": "failed"})
+            
+
+class Inapp_login(APIView):
+    def post(self, request):
+        username = request.data.get("username")
+        private_key = request.data.get("private_key")
+        app_id = request.data.get("app_id")
+        with open('private.pem', 'rb') as f:
+            private_key = f.read().decode('utf-8')
+        try:
+            user = User.objects.get(username=username)
+            app = Applications.objects.get(app_id=app_id)
+            if user.inapp_auth:
+                user_ob = UserSerializer(user)
+                if verify_signature(private_key, user.inapp_public_key):
+                    code, nonce_len = generate_code(user.token, app.public_key)
+                    return Response(
+                        {
+                            "verified": True,
+                            **user_ob.data,
+                            "code": code,
+                            "nonce_len": nonce_len,
+                            "redirect_url": app.redirection_url,
+                        }
+                    )
+                else:
+                    return Response({"verified": False})
+            else:
+                return Response({"verified": False})
+        except User.DoesNotExist:
+            return Response({"status": "NotExists"})
 
 
 class Face_auth_signup(APIView):

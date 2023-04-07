@@ -114,6 +114,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ASGI_APPLICATION = "passwordless_authentication.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+} 
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

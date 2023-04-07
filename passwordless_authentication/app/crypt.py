@@ -6,6 +6,13 @@ import smtplib, ssl
 from email.message import EmailMessage
 from .models import *
 
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.exceptions import *
+
 port = 587  # For starttls
 smtp_server = "smtp.gmail.com"
 sender_email = "ayaan.ali.63621@gmail.com" # Enter the sender email address
@@ -53,4 +60,17 @@ def generate_token():
             print("token already exists")
         except User.DoesNotExist:
             return token
-    
+        
+
+def verify_signature(private_key, public_key):
+    public_key = load_pem_public_key(public_key.encode('utf8'), backend=default_backend())
+    private_key = load_pem_private_key(private_key.encode('utf8'), password=None, backend=default_backend())
+    message = b"Hello World"
+    signature = private_key.sign(message, padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),hashes.SHA256())
+    try:
+        public_key.verify(signature, message, padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),hashes.SHA256())
+        print("Signature is valid")
+        return True
+    except InvalidSignature:
+        print("Signature is invalid")
+        return False

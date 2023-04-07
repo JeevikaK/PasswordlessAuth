@@ -28,11 +28,11 @@ def audio_dir_path(instance, filename):
 class User(models.Model):
     username = models.CharField(max_length=100, primary_key=True)
     face_auth = models.BooleanField(default=False)
-    fido_auth = models.BooleanField(default=False)
-    # blockchain_auth = models.BooleanField(default=False)
+    inapp_auth = models.BooleanField(default=False)
     voice_auth = models.BooleanField(default=False)
     face_image = models.FileField(upload_to=img_dir_path, default="")
     voice_image = models.FileField(upload_to=audio_dir_path, default="")
+    inapp_public_key = models.CharField(max_length=1000, default="")
     token = models.CharField(max_length=100, unique=True)
     recovery_email = models.CharField(max_length=100, default=None, null=True)
     recovery_phone_number = models.CharField(max_length=100, default=None, null=True)

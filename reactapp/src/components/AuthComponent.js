@@ -42,6 +42,11 @@ const AuthComponent = () => {
                             setErrorText('Face authentication is not enabled for this user!')
                             return false
                         }
+                        if(!response.data.inapp_auth && authType === 'inapp'){
+                            setError(true)
+                            setErrorText('In-app authentication is not enabled for this user!')
+                            return false
+                        }
                     }
                 
                     break
@@ -79,7 +84,7 @@ const AuthComponent = () => {
 
     async function handleInAppClick(e) {
         e.preventDefault()
-        let status = await checkUser(username, state, 'face')
+        let status = await checkUser(username, state, 'inapp')
         if(!status)
             return
         let inAppLink = '/'.concat(window.appid).concat('/').concat(state).concat('/inapp')
