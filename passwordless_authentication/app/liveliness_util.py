@@ -9,8 +9,6 @@ from liveliness.anti_spoof_predict import AntiSpoofPredict
 from liveliness.generate_patches import CropImage
 from liveliness.utility import parse_model_name
 
-from app.face_utils import verify_face
-
 warnings.filterwarnings("ignore")
 
 
@@ -68,7 +66,7 @@ model_v2 = AntiSpoofPredict(0, os.path.join(model_dir, os.listdir(model_dir)[1])
 print(f"\nLiveliness model loaded in {time.time() - start}'s\n")
 
 
-def verify_liveliness_and_face(face_video, username):
+def verify_liveliness(face_video):
     unikey = uuid.uuid4().hex
     with open(f"media/temp-{unikey}.mp4", "wb") as f:
         f.write(face_video.read())
@@ -78,6 +76,7 @@ def verify_liveliness_and_face(face_video, username):
     false_count = 0
     counter = 0
 
+    check_frames = []
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret or counter == 60:
@@ -85,9 +84,8 @@ def verify_liveliness_and_face(face_video, username):
         counter += 1
         res = test(frame, model_v1, model_v2)
         if res:
-            if not verify_face(frame, username):
-                print("verification failed through face verification")
-                return False
+            if counter%10 == 0:
+                check_frames.append(frame)
             true_count += 1
         else:
             false_count += 1
@@ -98,8 +96,8 @@ def verify_liveliness_and_face(face_video, username):
     os.remove(path)
     if true_count > false_count:
         print("verification successfull")
-        return True
+        return True, check_frames
     else:
         print("verification failed through liveliness")
-        return False
+        return False, []
 

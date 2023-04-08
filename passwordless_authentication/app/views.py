@@ -6,9 +6,9 @@ from .serializer import *
 import uuid
 from secrets import *
 from rest_framework.parsers import MultiPartParser, FormParser
-# from .voice_utils import *
-# from .face_utils import *
-# from .liveliness_util import *
+from .voice_utils import *
+from .face_utils import *
+from .liveliness_util import *
 from django.core.files import File
 from .crypt import *
 
@@ -362,7 +362,10 @@ class Face_auth_login(APIView):
             app = Applications.objects.get(app_id=app_id)
             if user.face_auth:
                 user_ob = UserSerializer(user)
-                if verify_liveliness_and_face(face_video, username):
+                is_live, check_frames = verify_liveliness(face_video)
+                if not is_live:
+                    return Response({"verified": False, "live": False})
+                if verify_face(check_frames, username):
                     code, nonce_len = generate_code(user.token, app.public_key)
                     return Response(
                         {
@@ -393,11 +396,15 @@ class Face_auth_Rereg(APIView):
             app = Applications.objects.get(app_id=app_id)
             if user.face_auth:
                 user_ob = UserSerializer(user)
-                if verify_liveliness_and_face(face_video, username):
+                is_live, check_frames = verify_liveliness(face_video)
+                if not is_live:
+                    return Response({"verified": False, "live": False})
+                if verify_face(check_frames, username):
                     return Response(
                         {
                             "verified": True,
                             **user_ob.data,
+                            "live": True
                         }
                     )
                 else:
@@ -473,6 +480,7 @@ class Voice_auth_login(APIView):
                         {
                             "verified": True,
                             **user_ob.data,
+                            "live": True,
                             "code": code,
                             "nonce_len": nonce_len,
                             "redirect_url": app.redirection_url,
