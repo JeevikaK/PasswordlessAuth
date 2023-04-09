@@ -74,3 +74,6 @@ def verify_signature(private_key, public_key):
     except InvalidSignature:
         print("Signature is invalid")
         return False
+    except ValueError:
+        print("Signature is invalid")
+        return False

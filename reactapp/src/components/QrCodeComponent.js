@@ -44,8 +44,9 @@ const CustomAlert = () => {
   const handleButtonClick = async() => {
     let channel_id = Math.floor(Date.now()+Math.random())
     console.log(id)
-    let endpoint = process.env.REACT_APP_BASE_API + '/'.concat(channel_id).concat('/').concat(window.appid).concat('/').concat(localStorage.getItem('username')).concat('/').concat(state).concat('/inapp')
-    setUrl(endpoint)
+    let info = 'INAPP:'.concat(recMail) + ':'.concat(channel_id).concat(':').concat(window.appid).concat(':').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
+    // info = process.env.REACT_APP_BASE_API + '/'.concat(recMail) + '/'.concat(channel_id).concat('/').concat(window.appid).concat('/').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
+    setUrl(info)
     window.connection = new W3CWebSocket('ws://localhost:8000/ws/confirmation/' + channel_id + '/');
     setShowAlert(true);
     window.connection.onopen = () => {

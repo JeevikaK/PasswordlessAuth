@@ -246,8 +246,6 @@ class Inapp_signup(APIView):
             app = Applications.objects.get(app_id=app_id)
             token = generate_token()
             public_key = request.data.get("public_key")
-            # with open('public.pem', 'rb') as f:
-            #     public_key = f.read().decode('utf-8')
             print(public_key)
             data = {
                 "username": request.data.get("username"),
@@ -279,8 +277,6 @@ class Inapp_login(APIView):
         username = request.data.get("username")
         private_key = request.data.get("private_key")
         app_id = request.data.get("app_id")
-        # with open('private.pem', 'rb') as f:
-        #     private_key = f.read().decode('utf-8')
         try:
             user = User.objects.get(username=username)
             app = Applications.objects.get(app_id=app_id)
@@ -530,3 +526,21 @@ class Voice_auth_Rereg(APIView):
 #             return Response({"status": "success", "code": code, "nonce_len": nonce_len, "redirect_url": app.redirection_url})
 #         except User.DoesNotExist or Applications.DoesNotExist:
 #             return Response({"status": "failed"})
+
+
+class TestBytes_store(APIView):
+    def get(self, request):
+        data = bytes("hello world", encoding="utf-8")
+        serializer = TestBytesSerializer(data={"id": 1, "bytes": data})
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({"status": "success", **serializer.data})
+        return Response({"status": "failed"})
+    
+
+class TestBytes_retrieve(APIView):
+    def get(self, request):
+        obj = TestBytes.objects.get(id = 1)
+        new_data = obj.bytes
+        print(new_data)
+        return Response({"status": "success"})
