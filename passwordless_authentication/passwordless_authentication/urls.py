@@ -38,7 +38,7 @@ urlpatterns = [
     path('api/login-voice-auth', Voice_auth_login.as_view(), name="Voice_auth_login"),
     path('api/re_reg-voice-auth', Voice_auth_Rereg.as_view(), name="Voice_auth_Rereg"),
     # path('api/generate-user-code', Generate_user_code.as_view(), name="Generate_user_code"),
-    path('api/testbytes', TestBytes_store.as_view(), name="TestBytes"),
-    path('api/testbytes2', TestBytes_retrieve.as_view(), name="TestBytes2")
+    # path('api/testbytes', TestBytes_store.as_view(), name="TestBytes"),
+    # path('api/testbytes2', TestBytes_retrieve.as_view(), name="TestBytes2")
 ]
 

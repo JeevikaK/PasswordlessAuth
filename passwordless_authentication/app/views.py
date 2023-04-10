@@ -6,9 +6,9 @@ from .serializer import *
 import uuid
 from secrets import *
 from rest_framework.parsers import MultiPartParser, FormParser
-from .voice_utils import *
-from .face_utils import *
-from .liveliness_util import *
+# from .voice_utils import *
+# from .face_utils import *
+# from .liveliness_util import *
 from django.core.files import File
 from .crypt import *
 
@@ -528,19 +528,20 @@ class Voice_auth_Rereg(APIView):
 #             return Response({"status": "failed"})
 
 
-class TestBytes_store(APIView):
-    def get(self, request):
-        data = bytes("hello world", encoding="utf-8")
-        serializer = TestBytesSerializer(data={"id": 1, "bytes": data})
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response({"status": "success", **serializer.data})
-        return Response({"status": "failed"})
+# class TestBytes_store(APIView):
+#     def get(self, request):
+#         # data = bytes("hello world", encoding="utf-8")
+#         data = b'\x00\x01\x02\x03\x04\x05\x06\x07\x08'
+#         serializer = TestBytesSerializer(data={"id": 1, "bytes": data})
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response({"status": "success", **serializer.data})
+#         return Response({"status": "failed"})
     
 
-class TestBytes_retrieve(APIView):
-    def get(self, request):
-        obj = TestBytes.objects.get(id = 1)
-        new_data = obj.bytes
-        print(new_data)
-        return Response({"status": "success"})
+# class TestBytes_retrieve(APIView):
+#     def get(self, request):
+#         obj = TestBytes.objects.get(id = 1)
+#         new_data = obj.bytes
+#         print(new_data)
+#         return Response({"status": "success", "data": new_data})
