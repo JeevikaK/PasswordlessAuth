@@ -1,19 +1,42 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { QRCodeCanvas } from "qrcode.react";
-import { useParams } from 'react-router-dom';
 
-const AlertComponent = ({ imageUrl, message }) => {
+const AlertComponent = ({ mode, state, message }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [url, setUrl] = useState("");
 
   const handleOpenModal = () => {
+    let channel_id = Math.floor(Date.now()+Math.random())
+    console.log(id)
+    let info = 'INAPP:'.concat(recMail) + ':'.concat(channel_id).concat(':').concat(window.appid).concat(':').concat(localStorage.getItem('username')).concat(':').concat(state).concat(mode)
+    // info = process.env.REACT_APP_BASE_API + '/'.concat(recMail) + '/'.concat(channel_id).concat('/').concat(window.appid).concat('/').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
+    setUrl(info)
     setModalIsOpen(true);
     console.log('open')
+    window.connection = new W3CWebSocket('ws://localhost:8000/ws/confirmation/' + channel_id + '/');
+    window.connection.onopen = () => {
+      console.log('WebSocket Client Connected');
+    }
+
+    window.connection.onmessage = (message) => {
+      const dataFromServer = JSON.parse(message.data);
+      if (dataFromServer) {
+        console.log(dataFromServer)
+        const json = dataFromServer.message
+        if (json.verified) {
+          console.log('verified!')
+          localStorage.removeItem('username')
+          const redirect = json.redirect_url + '?code=' + json.code + '&len=' + json.nonce_len + '&mode=video'
+          window.location.href = redirect
+        }
+      }
+    };
   };
 
   const handleCloseModal = () => {
     setModalIsOpen(false);
+    window.connection.close()
     console.log('close')
   };
   const qrcode = (

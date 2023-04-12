@@ -52,10 +52,4 @@ class RecoveryToken(models.Model):
         return self.token 
     
 
-# class TestBytes(models.Model):
-#     id = models.IntegerField(primary_key=True)
-#     bytes = models.BinaryField(blank = True, null = True, editable = True)
-#     created_at = models.DateTimeField(default=timezone.now)
-
-
     

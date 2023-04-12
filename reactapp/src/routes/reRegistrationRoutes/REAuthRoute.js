@@ -4,9 +4,9 @@ import { useState } from "react";
 const REAuthRoute = () => {
     const [type, setType] = useState('pre-auth');
     return (
-    <>
-        <REAuthComponent type={type}/>
-    </>    
+        <>
+            <REAuthComponent type={type}/>
+        </>    
      );
 }
  

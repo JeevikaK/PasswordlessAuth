@@ -165,10 +165,12 @@ class Recovery_verify_face(APIView):
                 os.remove(f"media/registeredFaces/{username}.npy")
                 embedding = create_face_embedding(request.data.get("face_image"))
                 if embedding is None:
-                    return Response({
+                    return Response(
+                        {
                             "status": "failed",
                             "message": "Face not detected",
-                        })
+                        }
+                    )
                 save_face_embedding(embedding)
                 user.face_image = File(
                     open("media/registeredFaces/embedding.npy", "rb")
@@ -231,7 +233,43 @@ class Recovery_verify_voice(APIView):
 
         except User.DoesNotExist:
             return Response({"status": "failed", "message": "User does not exist"})
-        
+
+
+class Recovery_verify_inapp(APIView):
+    def post(self, request):
+        try:
+            # get recovery_token, public_key
+            token = request.data.get("recovery_token")
+            try:
+                recovery_token = RecoveryToken.objects.get(token=token)
+            except RecoveryToken.DoesNotExist:
+                return Response({"status": "failed", "message": "Invalid token"})
+            if not recovery_token.valid:
+                return Response({"status": "failed", "message": "Token Expired"})
+            recovery_token.valid = False
+            recovery_token.save()
+            username = recovery_token.username
+            user = User.objects.get(username=username)
+            if user.inapp_auth:
+                user.inapp_public_key = request.data.get("public_key")
+                user.save()
+                return Response(
+                    {
+                        "status": "success",
+                        "recovery_token": token,
+                    }
+                )
+            else:
+                return Response(
+                    {
+                        "status": "failed",
+                        "message": "User does not have inapp auth enabled",
+                    }
+                )
+
+        except User.DoesNotExist:
+            return Response({"status": "failed", "message": "User does not exist"})
+
 
 class Inapp_signup(APIView):
     def post(self, request):
@@ -270,7 +308,7 @@ class Inapp_signup(APIView):
                 )
             else:
                 return Response({"status": "failed"})
-            
+
 
 class Inapp_login(APIView):
     def post(self, request):
@@ -370,10 +408,11 @@ class Face_auth_login(APIView):
                             "code": code,
                             "nonce_len": nonce_len,
                             "redirect_url": app.redirection_url,
+                            "live": True,
                         }
                     )
                 else:
-                    return Response({"verified": False})
+                    return Response({"verified": False, "live": True})
             else:
                 return Response({"verified": False})
         except User.DoesNotExist:
@@ -396,15 +435,9 @@ class Face_auth_Rereg(APIView):
                 if not is_live:
                     return Response({"verified": False, "live": False})
                 if verify_face(check_frames, username):
-                    return Response(
-                        {
-                            "verified": True,
-                            **user_ob.data,
-                            "live": True
-                        }
-                    )
+                    return Response({"verified": True, **user_ob.data, "live": True})
                 else:
-                    return Response({"verified": False})
+                    return Response({"verified": False, "live": True})
             else:
                 return Response({"verified": False})
         except User.DoesNotExist:
@@ -527,21 +560,3 @@ class Voice_auth_Rereg(APIView):
 #         except User.DoesNotExist or Applications.DoesNotExist:
 #             return Response({"status": "failed"})
 
-
-# class TestBytes_store(APIView):
-#     def get(self, request):
-#         # data = bytes("hello world", encoding="utf-8")
-#         data = b'\x00\x01\x02\x03\x04\x05\x06\x07\x08'
-#         serializer = TestBytesSerializer(data={"id": 1, "bytes": data})
-#         if serializer.is_valid(raise_exception=True):
-#             serializer.save()
-#             return Response({"status": "success", **serializer.data})
-#         return Response({"status": "failed"})
-    
-
-# class TestBytes_retrieve(APIView):
-#     def get(self, request):
-#         obj = TestBytes.objects.get(id = 1)
-#         new_data = obj.bytes
-#         print(new_data)
-#         return Response({"status": "success", "data": new_data})

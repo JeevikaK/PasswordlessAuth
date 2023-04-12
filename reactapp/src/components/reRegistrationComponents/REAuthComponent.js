@@ -50,8 +50,8 @@ const REAuthComponent = ({type}) => {
                             return false
                         }
                     }
-                
                     break
+                    
                 case 'post-auth':
                     if(authType === 'voice' && response.data.voice_auth){
                         setError(true)

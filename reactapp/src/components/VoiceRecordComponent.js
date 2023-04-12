@@ -97,10 +97,6 @@ const VoiceRcordComponent = () => {
     setAudioUrl(URL.createObjectURL(event.data));
   };
 
-  const alertClick = () => {
-    <AlertComponent imageUrl="https://example.com/image.jpg"/>
-  }
-
   const handleSignup = async (e) => {
     setLoading(true)
     setLoadingContent('Registering your voice...')
@@ -293,7 +289,7 @@ const VoiceRcordComponent = () => {
             Back
           </button>
         </div>
-        {state === 'login' && <AlertComponent imageUrl="https://example.com/image.jpg" message="Don't have a voice recorder? Login through phone"/>}
+        {state === 'login' && <AlertComponent mode='voice' state='login' message="Don't have a voice recorder? Login through phone"/>}
 
       </div>
       {showComponent && <RecoveryComponent

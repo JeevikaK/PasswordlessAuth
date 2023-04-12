@@ -16,7 +16,7 @@ class RecoveryTokenSerializer(serializers.ModelSerializer):
         model = RecoveryToken
         fields = '__all__'
 
-class TestBytesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TestBytes
-        fields = '__all__'
+# class TestBytesSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = TestBytes
+#         fields = '__all__'

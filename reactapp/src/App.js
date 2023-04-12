@@ -12,8 +12,9 @@ import VideoLoginRoute from './routes/VideoLoginRoute';
 import VoiceRecord_Recovery from './routes/recoveryRoutes/RecoveryVoice';
 import VideoRecord_Recovery from './routes/recoveryRoutes/RecoveryVideo';
 import QrCodeComponent from './components/QrCodeComponent';
-
-// import VideoRecorder from './components/Websocket';
+import Inapp_postReg from './routes/reRegistrationRoutes/Inapp_postReg';
+import Inapp_reReg from './routes/reRegistrationRoutes/Inapp_reReg';
+import Inapp_Recovery from './routes/recoveryRoutes/RecoveryInapp';
 
 
 class App extends React.Component {
@@ -24,8 +25,10 @@ class App extends React.Component {
           <Route path=':id/re-register' element={<REAuthRoute/>}></Route>
           <Route path=':id/pre-auth/voice' element={<VoiceRecord_reReg/>}></Route>
           <Route path=':id/pre-auth/video' element={<VideoRecord_reReg />}></Route>
+          <Route path=':id/pre-auth/inapp' element={<Inapp_reReg />}></Route>
           <Route path=':id/post-auth/voice' element={<VoiceRecord_postReg/>}></Route>
           <Route path=':id/post-auth/video' element={<VideoRecord_postReg />}></Route>
+          <Route path=':id/post-auth/inapp' element={<Inapp_postReg />}></Route>
           <Route path=':id/:state' element={<AuthRoute/>}></Route>
           <Route path=':id/:state/voice' element={<VoiceRecord/>}></Route>
           <Route path=':id/:state/inapp' element={<QrCodeComponent />}></Route>
@@ -33,7 +36,7 @@ class App extends React.Component {
           <Route path=':id/login/video' element={<VideoLoginRoute />}></Route>
           <Route path=':id/recover/voice/:token' element={<VoiceRecord_Recovery/>}></Route>
           <Route path=':id/recover/video/:token' element={<VideoRecord_Recovery />}></Route>
-          {/* <Route path=':id/login/websocket' element={<VideoRecorder />}></Route> */}
+          <Route path=':id/recover/inapp/:token' element={<Inapp_Recovery />}></Route>
         </Routes>
     </BrowserRouter>
     )

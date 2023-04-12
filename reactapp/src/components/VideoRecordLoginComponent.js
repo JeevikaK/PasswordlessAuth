@@ -139,9 +139,6 @@ const VideoRecorder = () => {
     }, 2000)
   }
 
-  const alertClick = () => {
-    <AlertComponent imageUrl="https://example.com/image.jpg"/>
-  }
 
   return (
     <div className='h-screen bg-black overflow-auto'>
@@ -196,7 +193,7 @@ const VideoRecorder = () => {
             Back
           </button>
         </div>
-        <AlertComponent imageUrl="https://example.com/image.jpg" message="Don't have a Web Camera? Login through phone"/>
+        <AlertComponent mode="video" state="login" message="Don't have a Web Camera? Login through phone"/>
       </div>
 
     </div>

@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { QRCodeCanvas } from "qrcode.react";
-import AppNameComponent from './AppNameComponent';
+import AppNameComponent from '../AppNameComponent';
 import axios from 'axios'
-import RecoveryComponent from './recoveryComponent';
+// import RecoveryComponent from './recoveryComponent';
 import { w3cwebsocket as W3CWebSocket, connection } from "websocket";
 
-const CustomAlert = () => {
+const CustomAlert = ({type, setType, recov}) => {
   const [id, setId] = useState('')
   const [url, setUrl] = useState("example.com");
   const [showAlert, setShowAlert] = useState(false);
-  const [state, setState] = useState(useParams().state)
-  const [recMail, setRecMail] = useState('');
+  const [recToken, setRecToken] = useState(useParams().token);
   const [userMail, setUserMail] = useState('')
-  const [sendingMail, setSendingMail] = useState(false)
+  // const [recMail, setRecMail] = useState('');
 
   const navigate = useNavigate();
 
@@ -28,8 +27,10 @@ const CustomAlert = () => {
       .then((res) => {
         setUserMail(res.data.recovery_email)
         // console.log(res.data.inapp_auth)
-        if((state=='signup' && res.data.userExists) || (state=='login' && !res.data.inapp_auth)){
-          navigate('/'.concat(window.appid).concat('/signup'))
+        if(recov == undefined){
+            if((type=='pre-auth'  && !res.data.inapp_auth) || (type=='post-auth' && res.data.inapp_auth)){
+                navigate('/'.concat(window.appid).concat('/re-register'))
+            }
         }
       })
 
@@ -46,8 +47,15 @@ const CustomAlert = () => {
   const handleButtonClick = async() => {
     let channel_id = Math.floor(Date.now()+Math.random())
     console.log(id)
-    let info = 'INAPP:'.concat(recMail) + ':'.concat(channel_id).concat(':').concat(window.appid).concat(':').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
+    if(type=='pre-auth')
+        var state = 'login'
+    else if(type=='post-auth')
+        var state = 'signup'
+    let info = 'INAPP::'.concat(channel_id).concat(':').concat(window.appid).concat(':').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
     // info = process.env.REACT_APP_BASE_API + '/'.concat(recMail) + '/'.concat(channel_id).concat('/').concat(window.appid).concat('/').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
+    if(recov == 'recover'){
+        info = 'INAPP:'.concat(recToken) + ':'.concat(channel_id).concat(':').concat(window.appid).concat(':').concat(localStorage.getItem('username')).concat(':recover').concat(':inapp')
+    }
     setUrl(info)
     window.connection = new W3CWebSocket('ws://localhost:8000/ws/confirmation/' + channel_id + '/');
     setShowAlert(true);
@@ -62,9 +70,11 @@ const CustomAlert = () => {
         const json = dataFromServer.message
         if (json.verified) {
           console.log('verified!')
-          localStorage.removeItem('username')
-          const redirect = json.redirect_url + '?code=' + json.code + '&len=' + json.nonce_len + '&mode=video'
-          window.location.href = redirect
+          if(type=='pre-auth')
+            setType('post-auth')
+          else if(type=='post-auth'){
+            navigate('/'.concat(window.appid).concat('/login'))
+          }
         }
       }
     };
@@ -86,29 +96,6 @@ const CustomAlert = () => {
     setShowAlert(false);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(recMail)
-  }
-
-  const sendRecMail = async (e) => {
-    e.preventDefault();
-    setSendingMail(true)
-    console.log('sending mail')
-    const endpoint = process.env.REACT_APP_BASE_API + '/api/recover_create'
-    let resp = await axios.post(endpoint, {
-      'username': localStorage.getItem('username'),
-      'method': 'inapp',
-      'base_url': window.location.origin + '/' + window.appid,
-    })
-    console.log(resp.data)
-    let magicNotif = document.getElementById('magicNotif')
-    magicNotif.hidden = false
-    setSendingMail(false)
-    setTimeout(() => {
-      magicNotif.hidden = true
-    }, 2000)
-  }
 
   const qrcode = (
     <QRCodeCanvas
@@ -123,19 +110,19 @@ const CustomAlert = () => {
   return (
     <div className='h-screen bg-black overflow-auto'>
       <AppNameComponent />
-      {state === 'login' && <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>{id}</p>}
+      {type === 'pre-auth' && <p className='font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>{id}</p>}
       {localStorage.getItem('username') && <p className='font-bold leading-tight tracking-tight text-gray-400 mb-8 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
         <div className=" bg-gray-800 px-10 py-6 mb-2 rounded-lg shadow dark:border md:mt-0 sm:max-w-md  dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-center items-center">
         <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 text-center pt-4 pl-4 pb-4 md:text-3xl dark:text-white'>In-App Authentication</h1>
-        {state === 'signup' && <button type='button'
+        {type === 'post-auth' && <button type='button'
             onClick={handleButtonClick}
             data-te-ripple-init
             data-te-ripple-color="light"
             className="inline-block rounded bg-gray-800 px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
             Register
         </button>}
-        {state === 'login' && <button type='button'
+        {type === 'pre-auth' && <button type='button'
             onClick={handleButtonClick}
             data-te-ripple-init
             data-te-ripple-color="light"
@@ -159,20 +146,7 @@ const CustomAlert = () => {
           </div>
         </div>
       )}
-
-      {userMail != '' &&  <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
-          Recover your account using email? 
-          <br></br>
-          {!sendingMail && <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>}
-          <br />
-          {sendingMail && <span>Sending...</span>}
-          <br/>
-          <span id='magicNotif' hidden={true}>Magic Link sent!</span>
-          </p>}
       </div>
-      </div>
-      <div className='mt-10'>
-        <RecoveryComponent setRecMail={setRecMail} submission={handleSubmit} />
       </div>
      
     </div>

@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/recover_create', Recovery_create.as_view(), name="Recover_create"),
     path('api/recover_verify_face', Recovery_verify_face.as_view(), name="Recover_verify"),
     path('api/recover_verify_voice', Recovery_verify_voice.as_view(), name="Recover_verify"),
+    path('api/recover_verify_inapp', Recovery_verify_inapp.as_view(), name="Recover_verify"),
     path('api/signup-inapp-auth', Inapp_signup.as_view(), name="Inapp_auth_signup"),
     path('api/login-inapp-auth', Inapp_login.as_view(), name="Inapp_auth_login"),
     path('api/signup-face-auth', Face_auth_signup.as_view(), name="Face_auth_signup"),

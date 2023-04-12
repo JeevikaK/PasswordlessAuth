@@ -49,6 +49,8 @@ class NoPass:
             resp.update({'mode': 'Voice Authentication'})
         elif mode=='video':
             resp.update({'mode': 'Face Authentication'})
+        elif mode=='inapp':
+            resp.update({'mode': 'In-App Authentication'})
         resp.update({'nonce': nonce})
         resp.update({'authenticated at': str(timezone.now())})
         resp.update({'token': token})
