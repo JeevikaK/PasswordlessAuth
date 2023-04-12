@@ -4,7 +4,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import AppNameComponent from './AppNameComponent';
 import axios from 'axios'
 import RecoveryComponent from './recoveryComponent';
-import { w3cwebsocket as W3CWebSocket, connection } from "websocket";
+import { w3cwebsocket as W3CWebSocket} from "websocket";
 
 const CustomAlert = () => {
   const [id, setId] = useState('')

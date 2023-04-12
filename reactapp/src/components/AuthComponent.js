@@ -47,6 +47,11 @@ const AuthComponent = () => {
                             setErrorText('In-app authentication is not enabled for this user!')
                             return false
                         }
+                        if(!response.data.fido_auth && authType === 'fido'){
+                            setError(true)
+                            setErrorText('FIDO authentication is not enabled for this user!')
+                            return false
+                        }
                     }
                 
                     break
@@ -92,6 +97,16 @@ const AuthComponent = () => {
         localStorage.setItem('username', username)
     }
 
+    async function handleFidoClick(e) {
+        e.preventDefault()
+        let status = await checkUser(username, state, 'fido')
+        if(!status)
+            return
+        let fidoLink = '/'.concat(window.appid).concat('/').concat(state).concat('/fido')
+        navigate(fidoLink);
+        localStorage.setItem('username', username)
+    }
+
     useEffect(() => {
         const endpoint = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)
         axios.get(endpoint)
@@ -102,15 +117,6 @@ const AuthComponent = () => {
             .catch((err) => console.log(err))
         
     }, [])
-
-    // async function myFunc(){
-    //     console.log('clicked')
-    //     const endpoint = process.env.REACT_APP_BASE_API+'/api/generate-user-code?app_id='+window.appid+'&username=shades'
-    //     let resp = await axios.get(endpoint)
-    //     console.log(resp.data)
-    //     const redirect = resp.data.redirect_url+'?code='+resp.data.code+'&len='+resp.data.nonce_len
-    //     window.location.href = redirect
-    // }
 
 
     return (
@@ -160,6 +166,18 @@ const AuthComponent = () => {
                                     <button
                                         type="submit"
                                         onClick={handleInAppClick}
+                                        data-te-ripple-init
+                                        data-te-ripple-color="light"
+                                        className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
+                                        Authenticate
+                                    </button>
+                                </div>
+
+                                <p className="text-sm font-medium text-gray-200 pt-7 pb-3">Fido Authentication</p>
+                                <div className="flex justify-center space-x-2">
+                                    <button
+                                        type="submit"
+                                        onClick={handleFidoClick}
                                         data-te-ripple-init
                                         data-te-ripple-color="light"
                                         className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">

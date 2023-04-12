@@ -29,6 +29,7 @@ class User(models.Model):
     username = models.CharField(max_length=100, primary_key=True)
     face_auth = models.BooleanField(default=False)
     inapp_auth = models.BooleanField(default=False)
+    fido_auth = models.BooleanField(default=False)
     voice_auth = models.BooleanField(default=False)
     face_image = models.FileField(upload_to=img_dir_path, default="")
     voice_image = models.FileField(upload_to=audio_dir_path, default="")
@@ -52,4 +53,13 @@ class RecoveryToken(models.Model):
         return self.token 
     
 
+class Credentials(models.Model):
+    id = models.BinaryField(primary_key=True, blank = True,  editable = True)
+    public_key = models.BinaryField(blank = True, null = True, editable = True)
+    sign_count = models.IntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def _str_(self):
+        return self.id
     

@@ -49,6 +49,11 @@ const REAuthComponent = ({type}) => {
                             setErrorText('In-app authentication is not enabled for this user!')
                             return false
                         }
+                        if(!response.data.fido_auth && authType === 'fido'){
+                            setError(true)
+                            setErrorText('FIDO authentication is not enabled for this user!')
+                            return false
+                        }
                     }
                     break
                     
@@ -125,6 +130,23 @@ const REAuthComponent = ({type}) => {
         localStorage.setItem('username', username)
     }
 
+    async function handleFidoClick(e) {
+        e.preventDefault()
+        let status = await checkUser(username, type, 'fido')
+        if(!status)
+            return
+        if(type==='pre-auth'){
+            let fidoLink = '/'.concat(window.appid).concat('/pre-auth').concat('/fido')
+            navigate(fidoLink);
+        }
+        else if(type==='post-auth'){
+            let fidoLink = '/'.concat(window.appid).concat('/post-auth').concat('/fido')
+            navigate(fidoLink);
+        }
+        
+        localStorage.setItem('username', username)
+    }
+
     useEffect(() => {
         console.log(username)
         const endpoint = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)
@@ -185,6 +207,18 @@ const REAuthComponent = ({type}) => {
                                     <button
                                         type="submit"
                                         onClick={handleInAppClick}
+                                        data-te-ripple-init
+                                        data-te-ripple-color="light"
+                                        className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
+                                        Authenticate
+                                    </button>
+                                </div>
+
+                                <p className="text-sm font-medium text-gray-200 pt-7 pb-3">Fido Authentication</p>
+                                <div className="flex justify-center space-x-2">
+                                    <button
+                                        type="submit"
+                                        onClick={handleFidoClick}
                                         data-te-ripple-init
                                         data-te-ripple-color="light"
                                         className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">

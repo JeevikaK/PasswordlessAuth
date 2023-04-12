@@ -30,16 +30,20 @@ urlpatterns = [
     path('api/recover_verify_face', Recovery_verify_face.as_view(), name="Recover_verify"),
     path('api/recover_verify_voice', Recovery_verify_voice.as_view(), name="Recover_verify"),
     path('api/recover_verify_inapp', Recovery_verify_inapp.as_view(), name="Recover_verify"),
+    path('api/fido-register-recover/generate-registration-options', Fido_register_recover_generate.as_view(), name="Fido_register_generate"),
+    path('api/fido-register-recover/verify-registration-response', Fido_register_recover_verify.as_view(), name="Fido_register_verify"),
     path('api/signup-inapp-auth', Inapp_signup.as_view(), name="Inapp_auth_signup"),
     path('api/login-inapp-auth', Inapp_login.as_view(), name="Inapp_auth_login"),
+    path('api/fido-register/generate-registration-options', Fido_register_generate.as_view(), name="Fido_register_generate"),
+    path('api/fido-register/verify-registration-response', Fido_register_verify.as_view(), name="Fido_register_verify"),
+    path('api/fido-auth/generate-authentication-options', Fido_auth_generate.as_view(), name="Fido_auth_generate"),
+    path('api/fido-auth/verify-authentication-response/<str:username>/<str:app_id>', Fido_auth_verify.as_view(), name="Fido_auth_verify"),
+    path('api/fido-auth-re_register/verify-authentication-response/<str:username>/<str:app_id>', Fido_auth_rereg_verify.as_view(), name="Fido_auth_verify"),
     path('api/signup-face-auth', Face_auth_signup.as_view(), name="Face_auth_signup"),
     path('api/login-face-auth', Face_auth_login.as_view(), name="Face_auth_login"),
     path('api/re_reg-face-auth', Face_auth_Rereg.as_view(), name="Face_auth_Rereg"),
     path('api/signup-voice-auth', Voice_auth_signup.as_view(), name="Voice_auth_signup"),
     path('api/login-voice-auth', Voice_auth_login.as_view(), name="Voice_auth_login"),
     path('api/re_reg-voice-auth', Voice_auth_Rereg.as_view(), name="Voice_auth_Rereg"),
-    # path('api/generate-user-code', Generate_user_code.as_view(), name="Generate_user_code"),
-    # path('api/testbytes', TestBytes_store.as_view(), name="TestBytes"),
-    # path('api/testbytes2', TestBytes_retrieve.as_view(), name="TestBytes2")
 ]
 

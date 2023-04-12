@@ -9,6 +9,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 # from .voice_utils import *
 # from .face_utils import *
 # from .liveliness_util import *
+from .fido_utils import *
 from django.core.files import File
 from .crypt import *
 
@@ -91,6 +92,7 @@ class Get_user(APIView):
                     "face_auth": user.face_auth,
                     "voice_auth": user.voice_auth,
                     "inapp_auth": user.inapp_auth,
+                    "fido_auth": user.fido_auth,
                     "userExists": True,
                     "recovery_email": user.recovery_email,
                     "recovery_phone_number": user.recovery_phone_number,
@@ -269,6 +271,58 @@ class Recovery_verify_inapp(APIView):
 
         except User.DoesNotExist:
             return Response({"status": "failed", "message": "User does not exist"})
+        
+class Fido_register_recover_generate(APIView):
+    def post(self, request):
+        username = request.data.get("username")
+        try:
+            token = request.data.get("recovery_token")
+            try:
+                recovery_token = RecoveryToken.objects.get(token=token)
+            except RecoveryToken.DoesNotExist:
+                return Response({"status": "failed", "message": "Invalid token"})
+            if not recovery_token.valid:
+                return Response({"status": "failed", "message": "Token Expired"})
+            recovery_token.valid = False
+            recovery_token.save()
+            username = recovery_token.username
+            user = User.objects.get(username=username)
+            if user.fido_auth:
+                Credentials.objects.filter(user=user).delete()
+                options = generate_reg_options(username)
+                return Response({"status": "success", "options": options})
+        except User.DoesNotExist:
+            return Response({"status": "failed", "message": "User does not exist"})
+
+
+class Fido_register_recover_verify(APIView):
+    def post(self, request):
+        username = request.query_params.get("username")
+        body = request.data
+        try:
+            user = User.objects.get(username=username)
+            if user.fido_auth:
+                verification = verify_reg_response(body, username)
+                data = {
+                    "id" : verification.credential_id, 
+                    "public_key" : verification.credential_public_key,
+                    "sign_count" : verification.sign_count,
+                    "user" : user.username
+                }
+                serializer = CredentialsSerializer(data=data)
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                    return Response({"status": "success"})
+                return Response({"status": "failed", "message": "Invalid data"})
+            else:
+                return Response(
+                    {
+                        "status": "failed",
+                        "message": "User does not have fido auth enabled",
+                    }
+                )
+        except User.DoesNotExist:
+            return Response({"status": "failed", "message": "User does not exist"})
 
 
 class Inapp_signup(APIView):
@@ -337,6 +391,125 @@ class Inapp_login(APIView):
                 return Response({"verified": False})
         except User.DoesNotExist:
             return Response({"status": "NotExists"})
+        
+
+class Fido_register_generate(APIView):
+    def post(self, request):
+        username = request.data.get("username")
+        options = generate_reg_options(username)
+        return Response({"status": "success", "options": options})
+      
+
+class Fido_register_verify(APIView):
+    def post(self, request):
+        username = request.query_params.get('username')
+        app_id = request.query_params.get('app_id')
+        print(app_id, "app_id")
+        recovery_email = request.query_params.get('recovery_email')
+        if recovery_email == '':
+            recovery_email = None
+        print(recovery_email, "recovery_email")
+        body = request.data
+        app = Applications.objects.get(app_id = app_id)
+        try:
+            user = User.objects.get(username=username)
+
+            verification = verify_reg_response(body, username)
+            data = {
+                "id" : verification.credential_id, 
+                "public_key" : verification.credential_public_key,
+                "sign_count" : verification.sign_count,
+                "user" : user.username
+            }
+            serializer = CredentialsSerializer(data=data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                user.fido_auth = True
+                user.save()
+                return Response({"status": "success"})
+            return Response({"status": "failed", "message": "Invalid data"})
+        except User.DoesNotExist:
+            verification = verify_reg_response(body, username)
+            data = {
+                "id" : verification.credential_id,
+                "public_key" : verification.credential_public_key,
+                "sign_count" : verification.sign_count,
+                "user" : username
+            }
+            token = generate_token()
+            serializer_user = UserSerializer(data = {"username": username, "fido_auth": True, "token": token, "recovery_email": recovery_email})
+            if serializer_user.is_valid(raise_exception=True):
+                serializer_user.save()
+                serializer_cred = CredentialsSerializer(data=data)
+                if serializer_cred.is_valid(raise_exception=True):
+                    serializer_cred.save()
+                    code, nonce_len = generate_code(token, app.public_key)
+                    return Response({
+                        "status": "success",
+                        "code": code,
+                        "nonce_len": nonce_len,
+                        "redirect_url": app.redirection_url,
+                        **serializer_user.data
+                    })
+            return Response({"status": "failed", "message": "Invalid data"})
+
+
+
+class Fido_auth_generate(APIView):
+    def post(self, request):
+        username = request.data.get("username")
+        try:
+            user = User.objects.get(username=username)
+            if user.fido_auth:
+                options = generate_auth_options(user)
+                return Response({"status": "success", "options": options})
+            else:
+                return Response({"status": "failed", "message": "User does not have fido auth enabled"})
+        except User.DoesNotExist:
+            return Response({"status": "failed", "message": "User does not exist"})
+      
+
+class Fido_auth_verify(APIView):
+    def post(self, request, username, app_id):
+        body = request.data
+        try:
+            user = User.objects.get(username=username)
+            app = Applications.objects.get(app_id = app_id)
+            if user.fido_auth:
+                verification_resp = verify_auth_response(body, user)
+                if verification_resp.get("verified"):
+                    code, nonce_len = generate_code(user.token, app.public_key)
+                    return Response({
+                        "verified": True,
+                        "code": code,
+                        "nonce_len": nonce_len,
+                        "redirect_url": app.redirection_url,
+                        **UserSerializer(user).data
+                    })
+                else:
+                    return Response(verification_resp)
+            else:
+                return Response({"verified": False, "message": "User does not have fido auth enabled"})
+        except User.DoesNotExist:
+            return Response({"verified": False, "message": "User does not exist"})
+
+
+class Fido_auth_rereg_verify(APIView):
+    def post(self, request, username, app_id):
+        body = request.data
+        try:
+            user = User.objects.get(username=username)
+            app = Applications.objects.get(app_id = app_id)
+            if user.fido_auth:
+                verification_resp = verify_auth_response(body, user)
+                if verification_resp.get("verified"):
+                    return Response({"verified": True})
+                else:
+                    return Response(verification_resp)
+            else:
+                return Response({"verified": False, "message": "User does not have fido auth enabled"})
+        except User.DoesNotExist:
+            return Response({"verified": False, "message": "User does not exist"})
 
 
 class Face_auth_signup(APIView):

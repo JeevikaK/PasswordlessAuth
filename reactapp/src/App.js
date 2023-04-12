@@ -15,7 +15,10 @@ import QrCodeComponent from './components/QrCodeComponent';
 import Inapp_postReg from './routes/reRegistrationRoutes/Inapp_postReg';
 import Inapp_reReg from './routes/reRegistrationRoutes/Inapp_reReg';
 import Inapp_Recovery from './routes/recoveryRoutes/RecoveryInapp';
-
+import Fido from './routes/FidoRoute';
+import Fido_reReg from './routes/reRegistrationRoutes/Fido_reReg';
+import Fido_postReg from './routes/reRegistrationRoutes/Fido_postReg';
+import Fido_Recovery from './routes/recoveryRoutes/RecoveryFido';
 
 class App extends React.Component {
   render(){
@@ -26,17 +29,21 @@ class App extends React.Component {
           <Route path=':id/pre-auth/voice' element={<VoiceRecord_reReg/>}></Route>
           <Route path=':id/pre-auth/video' element={<VideoRecord_reReg />}></Route>
           <Route path=':id/pre-auth/inapp' element={<Inapp_reReg />}></Route>
+          <Route path=':id/pre-auth/fido' element={<Fido_reReg/>}></Route>
           <Route path=':id/post-auth/voice' element={<VoiceRecord_postReg/>}></Route>
           <Route path=':id/post-auth/video' element={<VideoRecord_postReg />}></Route>
           <Route path=':id/post-auth/inapp' element={<Inapp_postReg />}></Route>
+          <Route path=':id/post-auth/fido' element={<Fido_postReg/>}></Route>
           <Route path=':id/:state' element={<AuthRoute/>}></Route>
           <Route path=':id/:state/voice' element={<VoiceRecord/>}></Route>
           <Route path=':id/:state/inapp' element={<QrCodeComponent />}></Route>
+          <Route path=':id/:state/fido' element={<Fido/>}></Route>
           <Route path=':id/signup/video' element={<VideoRecord />}></Route>
           <Route path=':id/login/video' element={<VideoLoginRoute />}></Route>
           <Route path=':id/recover/voice/:token' element={<VoiceRecord_Recovery/>}></Route>
           <Route path=':id/recover/video/:token' element={<VideoRecord_Recovery />}></Route>
           <Route path=':id/recover/inapp/:token' element={<Inapp_Recovery />}></Route>
+          <Route path=':id/recover/fido/:token' element={<Fido_Recovery/>}></Route>
         </Routes>
     </BrowserRouter>
     )

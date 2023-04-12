@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { QRCodeCanvas } from "qrcode.react";
+import { w3cwebsocket as W3CWebSocket} from "websocket";
+import { useParams } from 'react-router-dom';
 
 const AlertComponent = ({ mode, state, message }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [url, setUrl] = useState("");
 
+  window.appid = useParams().id
+
   const handleOpenModal = () => {
     let channel_id = Math.floor(Date.now()+Math.random())
-    console.log(id)
-    let info = 'INAPP:'.concat(recMail) + ':'.concat(channel_id).concat(':').concat(window.appid).concat(':').concat(localStorage.getItem('username')).concat(':').concat(state).concat(mode)
+    console.log(window.appid)
+    let info = 'INAPP::'.concat(channel_id).concat(':').concat(window.appid).concat(':').concat(localStorage.getItem('username')).concat(':').concat(state).concat(mode)
     // info = process.env.REACT_APP_BASE_API + '/'.concat(recMail) + '/'.concat(channel_id).concat('/').concat(window.appid).concat('/').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
     setUrl(info)
     setModalIsOpen(true);
