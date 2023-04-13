@@ -22,6 +22,7 @@ function Camera({recov}) {
   const [loadingContent, setLoadingContent] = useState('Registering....')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('Face not captured properly, register again!')
 
   window.appid = useParams().id
 
@@ -86,6 +87,8 @@ function Camera({recov}) {
   }
 
   const handleSubmit = async (e) => {
+    setError(false)
+    setErrorMessage('Face not captured properly, register again!')
     setLoading(true)
     e.preventDefault();
     const formData = new FormData();
@@ -113,12 +116,14 @@ function Camera({recov}) {
       if(json.status==='success'){
         console.log('registered!');
         localStorage.removeItem('username')
-        console.log('registered!');
         let link = '/'.concat(window.appid).concat('/login')
         navigate(link);
       }
       else{
         setError(true)
+        if(recov==='recover'){
+          setErrorMessage(json.message)
+        }
       }
     }
     catch (err) {
@@ -171,7 +176,7 @@ function Camera({recov}) {
               </div>
             )}
           </form>
-          {error && <p className='text-red-500 m-6'>Face not captured properly, register again!</p>}
+          {error && <p className='text-red-500 m-6'>{errorMessage}</p>}
         </div>
         <div className='flex space-x-4'>
           <button type='button'

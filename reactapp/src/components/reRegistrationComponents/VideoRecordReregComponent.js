@@ -81,6 +81,8 @@ const VideoRecorder = ({type, setType}) => {
   const handleSubmit = async () => {
     setLoading(true)
     setLoadingContent('Verifying your face...')
+    setErrorMessage('Verification failed. Please try again.')
+    setError(false)
     const formData = new FormData();
     formData.append('username', localStorage.getItem('username'))
     formData.append('face_video', window.blob)
@@ -98,6 +100,8 @@ const VideoRecorder = ({type, setType}) => {
       }
       else{
         console.log('not verified!')
+        if(json.live === false)
+          setErrorMessage("Face not found to be live. Please try again.")
         setError(true)
       }
     }

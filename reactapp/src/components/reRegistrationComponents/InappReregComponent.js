@@ -12,6 +12,7 @@ const CustomAlert = ({type, setType, recov}) => {
   const [showAlert, setShowAlert] = useState(false);
   const [recToken, setRecToken] = useState(useParams().token);
   const [userMail, setUserMail] = useState('')
+  const [error, setError] = useState(false)
   // const [recMail, setRecMail] = useState('');
 
   const navigate = useNavigate();

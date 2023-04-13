@@ -94,6 +94,7 @@ const VoiceRcordReregComponent = ({type, setType, recov}) => {
   };
 
   const handleSignup = async (e) => {
+    setError(false)
     setLoading(true)
     setLoadingContent('Registering your voice...')
     e.preventDefault();
@@ -115,6 +116,10 @@ const VoiceRcordReregComponent = ({type, setType, recov}) => {
       })
       let json = await response.json();
       console.log(json);
+      if (recov==='recover' && json.status==='failed'){
+        setError(true)
+        setErrorMessage(json.message)
+      }
       localStorage.removeItem('username')
       console.log('registered!');
       let link = '/'.concat(window.appid).concat('/login')

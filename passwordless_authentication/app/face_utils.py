@@ -43,10 +43,14 @@ def verify(emb1, emb2):
         return False
 
 def verify_face(frames, username):
-    claimed_emb = load_face_embedding(username)
-    if claimed_emb is None:
+    try:
+        claimed_emb = load_face_embedding(username)
+        if claimed_emb is None:
+            return False
+        test_emb = create_embedding(frames[random.randint(0, len(frames) - 1)])
+        if not verify(test_emb, claimed_emb):
+            return False
+        return True
+    except Exception as e:
+        print(e)
         return False
-    test_emb = create_embedding(frames[random.randint(0, len(frames) - 1)])
-    if not verify(test_emb, claimed_emb):
-        return False
-    return True

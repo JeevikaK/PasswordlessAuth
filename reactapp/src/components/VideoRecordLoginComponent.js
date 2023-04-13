@@ -47,6 +47,7 @@ const VideoRecorder = () => {
 
   const handleStart = () => {
     setError(false)
+    setErrorMessage('Verification failed. Please try again.')
     setRecording(true);
     navigator.mediaDevices.getUserMedia({ video: true })
       .then((stream) => {
@@ -105,6 +106,8 @@ const VideoRecorder = () => {
       }
       else {
         console.log('not verified!')
+        if(json.live === false)
+          setErrorMessage("Face not found to be live. Please try again.")
         setError(true)
       }
     }

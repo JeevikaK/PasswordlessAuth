@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from .models import *
 from rest_framework.response import Response
@@ -6,12 +5,13 @@ from .serializer import *
 import uuid
 from secrets import *
 from rest_framework.parsers import MultiPartParser, FormParser
-# from .voice_utils import *
-# from .face_utils import *
-# from .liveliness_util import *
+from .voice_utils import *
+from .face_utils import *
+from .liveliness_util import *
 from .fido_utils import *
 from django.core.files import File
 from .crypt import *
+import os
 
 
 # Create your views here.
@@ -330,6 +330,9 @@ class Inapp_signup(APIView):
         try:
             user = User.objects.get(username=request.data.get("username"))
             user.inapp_public_key = request.data.get("public_key")
+            recovery_email = request.query_params.get('recovery_email')
+            if recovery_email == '':
+                recovery_email = None
             user.inapp_auth = True
             user.save()
             return Response({"status": "success"})
@@ -344,7 +347,7 @@ class Inapp_signup(APIView):
                 "token": token,
                 "inapp_public_key": public_key,
                 "inapp_auth": True,
-                "recovery_email": request.data.get("recovery_email"),
+                "recovery_email": recovery_email,
             }
             serializer = UserSerializer(data=data)
             if serializer.is_valid(raise_exception=True):
@@ -404,11 +407,9 @@ class Fido_register_verify(APIView):
     def post(self, request):
         username = request.query_params.get('username')
         app_id = request.query_params.get('app_id')
-        print(app_id, "app_id")
         recovery_email = request.query_params.get('recovery_email')
         if recovery_email == '':
             recovery_email = None
-        print(recovery_email, "recovery_email")
         body = request.data
         app = Applications.objects.get(app_id = app_id)
         try:
@@ -589,7 +590,7 @@ class Face_auth_login(APIView):
             else:
                 return Response({"verified": False})
         except User.DoesNotExist:
-            return Response({"status": "NotExists"})
+            return Response({"status": "NotExists", "verified": False})
 
 
 class Face_auth_Rereg(APIView):
@@ -601,7 +602,6 @@ class Face_auth_Rereg(APIView):
         app_id = request.data.get("app_id")
         try:
             user = User.objects.get(username=username)
-            app = Applications.objects.get(app_id=app_id)
             if user.face_auth:
                 user_ob = UserSerializer(user)
                 is_live, check_frames = verify_liveliness(face_video)
@@ -614,7 +614,7 @@ class Face_auth_Rereg(APIView):
             else:
                 return Response({"verified": False})
         except User.DoesNotExist:
-            return Response({"status": "NotExists"})
+            return Response({"status": "NotExists", "verified": False})
 
 
 class Voice_auth_signup(APIView):
