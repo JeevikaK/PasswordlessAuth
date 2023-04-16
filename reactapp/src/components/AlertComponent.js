@@ -13,7 +13,7 @@ const AlertComponent = ({ mode, state, message }) => {
   const handleOpenModal = () => {
     let channel_id = Math.floor(Date.now()+Math.random())
     console.log(window.appid)
-    let info = 'INAPP::'.concat(channel_id).concat(':').concat(window.appid).concat(':').concat(localStorage.getItem('username')).concat(':').concat(state).concat(mode)
+    let info = 'INAPP::'.concat(channel_id).concat(':').concat(window.appid).concat(':').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':').concat(mode)
     // info = process.env.REACT_APP_BASE_API + '/'.concat(recMail) + '/'.concat(channel_id).concat('/').concat(window.appid).concat('/').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
     setUrl(info)
     setModalIsOpen(true);

@@ -46,12 +46,14 @@ const CustomAlert = ({type, setType, recov}) => {
   }, [])
 
   const handleButtonClick = async() => {
-    let channel_id = Math.floor(Date.now()+Math.random())
+    // let channel_id = Math.floor(Date.now()+Math.random())
+    let channel_id = 1681415300217
+    console.log(channel_id)
     console.log(id)
     if(type=='pre-auth')
         var state = 'login'
     else if(type=='post-auth')
-        var state = 'signup'
+        var state = 're-register'
     let info = 'INAPP::'.concat(channel_id).concat(':').concat(window.appid).concat(':').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
     // info = process.env.REACT_APP_BASE_API + '/'.concat(recMail) + '/'.concat(channel_id).concat('/').concat(window.appid).concat('/').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
     if(recov == 'recover'){
@@ -69,8 +71,8 @@ const CustomAlert = ({type, setType, recov}) => {
       if (dataFromServer) {
         console.log(dataFromServer)
         const json = dataFromServer.message
-        if (json.verified) {
-          console.log('verified!')
+        if (json.verified || json.status) {
+          console.log(json.verified, json.status)
           if(type=='pre-auth')
             setType('post-auth')
           else if(type=='post-auth'){

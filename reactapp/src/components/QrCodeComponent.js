@@ -44,8 +44,10 @@ const CustomAlert = () => {
   }, [])
 
   const handleButtonClick = async() => {
-    let channel_id = Math.floor(Date.now()+Math.random())
-    console.log(id)
+    // let channel_id = Math.floor(Date.now()+Math.random())
+    let channel_id = '1681415300217'
+    // console.log(id)
+    console.log(channel_id)
     let info = 'INAPP:'.concat(recMail) + ':'.concat(channel_id).concat(':').concat(window.appid).concat(':').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
     // info = process.env.REACT_APP_BASE_API + '/'.concat(recMail) + '/'.concat(channel_id).concat('/').concat(window.appid).concat('/').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
     setUrl(info)
@@ -60,8 +62,9 @@ const CustomAlert = () => {
       if (dataFromServer) {
         console.log(dataFromServer)
         const json = dataFromServer.message
-        if (json.verified) {
-          console.log('verified!')
+        console.log(json)
+        if (json.status || json.verified) {
+          console.log(json.status || json.verified)
           localStorage.removeItem('username')
           const redirect = json.redirect_url + '?code=' + json.code + '&len=' + json.nonce_len + '&mode=video'
           window.location.href = redirect
