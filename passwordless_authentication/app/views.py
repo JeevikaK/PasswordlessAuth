@@ -330,13 +330,13 @@ class Inapp_signup(APIView):
         try:
             user = User.objects.get(username=request.data.get("username"))
             user.inapp_public_key = request.data.get("public_key")
-            recovery_email = request.query_params.get('recovery_email')
-            if recovery_email == '':
-                recovery_email = None
             user.inapp_auth = True
             user.save()
             return Response({"status": "success"})
         except User.DoesNotExist:
+            recovery_email = request.data.get('recovery_email')
+            if recovery_email == '':
+                recovery_email = None
             app_id = request.data.get("app_id")
             app = Applications.objects.get(app_id=app_id)
             token = generate_token()
