@@ -163,7 +163,7 @@ const CustomAlert = () => {
         </div>
       )}
 
-      {userMail != '' &&  <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
+      {userMail != '' && state === 'login' &&  <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
           Recover your account using email? 
           <br></br>
           {!sendingMail && <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>}
