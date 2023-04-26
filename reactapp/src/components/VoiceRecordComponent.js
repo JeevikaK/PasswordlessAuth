@@ -41,12 +41,12 @@ const VoiceRcordComponent = () => {
     axios.get(endpoint1)
       .then((res) => {
         setUserMail(res.data.recovery_email)
-        if((state==='login'  && !res.data.voice_auth) || (state==='signup' && res.data.voice_auth) ){
+        if ((state === 'login' && !res.data.voice_auth) || (state === 'signup' && res.data.voice_auth)) {
           navigate('/'.concat(window.appid).concat('/').concat(state))
         }
-        
+
       })
-      
+
     const endpoint2 = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)
     axios.get(endpoint2)
       .then((res) => {
@@ -115,7 +115,7 @@ const VoiceRcordComponent = () => {
       let json = await response.json();
       console.log('registered!');
       localStorage.removeItem('username')
-      const redirect = json.redirect_url+'?code='+json.code+'&len='+json.nonce_len+'&mode=voice'
+      const redirect = json.redirect_url + '?code=' + json.code + '&len=' + json.nonce_len + '&mode=voice'
       window.location.href = redirect
     }
     catch (err) {
@@ -133,6 +133,7 @@ const VoiceRcordComponent = () => {
     formData.append('voice_image', audioBlob, "recording.wav");
     formData.append('username', localStorage.getItem('username'));
     formData.append('app_id', window.appid)
+    formData.append('mode', 'web')
     try {
       let response = await fetch(process.env.REACT_APP_BASE_API + '/api/login-voice-auth', {
         method: 'POST',
@@ -143,7 +144,7 @@ const VoiceRcordComponent = () => {
       if (json.verified) {
         console.log('verified!')
         localStorage.removeItem('username')
-        const redirect = json.redirect_url+'?code='+json.code+'&len='+json.nonce_len+'&mode=voice'
+        const redirect = json.redirect_url + '?code=' + json.code + '&len=' + json.nonce_len + '&mode=voice'
         window.location.href = redirect
       }
       else {
@@ -168,13 +169,13 @@ const VoiceRcordComponent = () => {
     let resp = await axios.post(endpoint, {
       'username': localStorage.getItem('username'),
       'method': 'voice',
-      'base_url': window.location.origin + '/' + window.appid ,
+      'base_url': window.location.origin + '/' + window.appid,
     })
     console.log(resp.data)
     let magicNotif = document.getElementById('magicNotif')
     magicNotif.hidden = false
     setSendingMail(false)
-    setTimeout(()=>{
+    setTimeout(() => {
       magicNotif.hidden = true
     }, 2000)
   }
@@ -214,7 +215,7 @@ const VoiceRcordComponent = () => {
                 <audio src={audioUrl} controls />
               </div>
             )}
-            {!audioUrl && (<>  
+            {!audioUrl && (<>
               <button
                 onClick={startRecording}
                 disabled={isRecording}
@@ -226,7 +227,7 @@ const VoiceRcordComponent = () => {
               </button>
               <br />
               {error && <p className='text-red-500 text-sm mt-2'>{errorMessage}</p>}
-              </>
+            </>
             )}
             {isRecording && (
               <button
@@ -271,13 +272,13 @@ const VoiceRcordComponent = () => {
             )}
           </form>
 
-          {state === 'login' && userMail!='' && <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
-              Recover your account using email? 
-              {!sendingMail && <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>}<br/>
-              <br/>
-                {sendingMail && <span>Sending...</span>}
-              <br/>
-              <span id='magicNotif' hidden={true}>Magic Link sent!</span>
+          {state === 'login' && userMail != '' && <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
+            Recover your account using email?
+            {!sendingMail && <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>}<br />
+            <br />
+            {sendingMail && <span>Sending...</span>}
+            <br />
+            <span id='magicNotif' hidden={true}>Magic Link sent!</span>
           </p>}
         </div>
         <div className='flex space-x-4'>
@@ -289,7 +290,7 @@ const VoiceRcordComponent = () => {
             Back
           </button>
         </div>
-        {state === 'login' && <AlertComponent mode='voice' state='login' message="Don't have a voice recorder? Login through phone"/>}
+        {state === 'login' && <AlertComponent mode='voice' state='login' message="Don't have a voice recorder? Login through phone" />}
 
       </div>
       {showComponent && <RecoveryComponent
