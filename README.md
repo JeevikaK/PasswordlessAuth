@@ -134,6 +134,10 @@ Run the ``sampleapp``
 - Core packages - ``keras-facenet, resemblyzer, cryptography``
 - External apis - ``webauthn ``
 
+#### Key Libraries and Repositories
+- Liveliness Detection - https://github.com/computervisioneng/Silent-Face-Anti-Spoofing (Tweaked source code to our needs)
+- QR Code Scanner - https://github.com/contactlutforrahman/flutter_qr_bar_scanner
+
 #### Frontend 
 - Web - ReatJS (HTML, CSS, JS)
 - App - Flutter (Dart)
