@@ -161,7 +161,7 @@ Run the ``sampleapp``
 #### Sign up page
 ![App Screenshot](https://drive.google.com/uc?export=view&id=1CZpwOUMIN7oGbGRPc7EHcN70tNhTCgQq)
 
-#### Sign up page
+#### Login page
 ![App Screenshot](https://drive.google.com/uc?export=view&id=1Zo_1sustw90gDTO1w1dj4U5LV9ENCqpN)
 
 #### Face authentication registration page
