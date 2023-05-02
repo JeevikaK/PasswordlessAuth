@@ -26,7 +26,7 @@ Install Requirements
 Run the server
 ```bash
     cd server
-    uvicorn passwordless_auth.asgi:application --reload --port 8000 --host localhost
+    uvicorn passwordless_authentication.asgi:application --reload --port 8000 --host localhost
 ```
 
 Run the web client
