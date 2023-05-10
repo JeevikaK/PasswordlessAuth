@@ -148,6 +148,10 @@ Run the ``sampleapp``
 - Web - ReatJS (HTML, CSS, JS)
 - App - Flutter (Dart)
 
+#### Other Softwares 
+- ffmpeg
+
+
 ## Features
 
 - A Single IDP plaform that provides multiple authentication     services - all passwordless, especially biometrics. (novel)
