@@ -373,10 +373,12 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
         centerTitle: true,
       ),
       body: Center(
-        child: Column(
-          children: [
-            (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
+            ],
+          ),
         ),
       ),
     );
@@ -526,7 +528,6 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
         filename: widget.filePath.split("/").last));
     request.headers.addAll(headers);
     request.fields.addAll({"app_id": appID, "username": username});
-    // print("request: " + request.toString());
     var res = await request.send();
     var response = await http.Response.fromStream(res);
     // print("This is response:" + response.body);

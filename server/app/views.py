@@ -13,10 +13,7 @@ from django.core.files import File
 from .crypt import *
 import os
 
-
 # Create your views here.
-
-
 class Register_app(APIView):
     def post(self, request):
         data = {

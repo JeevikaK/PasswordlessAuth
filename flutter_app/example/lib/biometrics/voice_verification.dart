@@ -103,140 +103,11 @@ class _VoiceVerficationState extends State<VoiceVerfication> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Container(
-              height: 400.0,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color.fromARGB(255, 2, 199, 226),
-                    Color.fromARGB(255, 6, 75, 210)
-                  ],
-                ),
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.elliptical(
-                      MediaQuery.of(context).size.width, 100.0),
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  _recorderTxt,
-                  style: TextStyle(fontSize: 70),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                buildElevatedButton(
-                  icon: _isRecording ? Icons.mic_none_rounded : Icons.mic,
-                  iconColor: Colors.red,
-                  f: record,
-                  text: 'Record',
-                ),
-                SizedBox(
-                  width: 30,
-                ),
-                buildElevatedButton(
-                  icon: Icons.stop,
-                  iconColor: Colors.black,
-                  f: stopRecord,
-                  text: 'Stop',
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                buildElevatedButton(
-                  icon: _isPlaying ? Icons.pause : Icons.play_arrow,
-                  iconColor: Colors.black,
-                  f: _isPlaying ? stopPlaying : startPlaying,
-                  text: 'Play',
-                ),
-                // SizedBox(
-                //   width: 30,
-                // ),
-                // buildElevatedButton(
-                //   icon: Icons.stop,
-                //   iconColor: Colors.black,
-                //   f: stopPlaying,
-                //   text: 'Stop',
-                // ),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            // ElevatedButton.icon(
-            //   style: ElevatedButton.styleFrom(
-            //     elevation: 10.0,
-            //   ),
-            //   onPressed: () {
-            //     setState(() {
-            //       _play = !_play;
-            //     });
-            //     if (_play) startPlaying();
-            //     if (!_play) stopPlaying();
-            //   },
-            //   icon: _play
-            //       ? Icon(
-            //           Icons.stop,
-            //         )
-            //       : Icon(Icons.play_arrow),
-            //   label: _play
-            //       ? Text(
-            //           "Stop Playing",
-            //           style: TextStyle(
-            //             fontSize: 25,
-            //           ),
-            //         )
-            //       : Text(
-            //           "Start Playing",
-            //           style: TextStyle(
-            //             fontSize: 25,
-            //           ),
-            //         ),
-            // ),
-            SizedBox(
-              height: 20,
-            ),
-            buildElevatedButton(
-              icon: Icons.upload_file,
-              iconColor: Colors.black,
-              f: () => createAlbum(widget.username, widget.appID, filePath),
-              text: 'Upload',
-            ),
+            (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
           ],
         ),
       ),
     );
-  }
-
-  _uploadAudio(String username, String appID, String filePath) async {
-    File file = File(filePath);
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse("http://localhost:8000/api/login-voice-auth"),
-    );
-    Map<String, String> headers = {"Content-type": "multipart/form-data"};
-    request.files.add(http.MultipartFile.fromBytes(
-        'voice_image', file.readAsBytesSync(),
-        filename: filePath.split("/").last));
-    request.headers.addAll(headers);
-    request.fields.addAll({"app_id": appID, "username": username});
-    // print("request: " + request.toString());
-    var res = await request.send();
-    var response = await http.Response.fromStream(res);
-    print("This is response:" + response.body);
-    return res.statusCode;
   }
 
   ElevatedButton buildElevatedButton(
@@ -324,6 +195,119 @@ class _VoiceVerficationState extends State<VoiceVerfication> {
       _isPlaying = false;
     });
     audioPlayer.stop();
+  }
+
+  Center buildColumn() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            height: 400.0,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color.fromARGB(255, 2, 199, 226),
+                  Color.fromARGB(255, 6, 75, 210)
+                ],
+              ),
+              borderRadius: BorderRadius.vertical(
+                bottom:
+                    Radius.elliptical(MediaQuery.of(context).size.width, 100.0),
+              ),
+            ),
+            child: Center(
+              child: Text(
+                _recorderTxt,
+                style: TextStyle(fontSize: 70),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              buildElevatedButton(
+                icon: _isRecording ? Icons.mic_none_rounded : Icons.mic,
+                iconColor: Colors.red,
+                f: record,
+                text: 'Record',
+              ),
+              SizedBox(
+                width: 30,
+              ),
+              buildElevatedButton(
+                icon: Icons.stop,
+                iconColor: Colors.black,
+                f: stopRecord,
+                text: 'Stop',
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              buildElevatedButton(
+                icon: _isPlaying ? Icons.pause : Icons.play_arrow,
+                iconColor: Colors.black,
+                f: _isPlaying ? stopPlaying : startPlaying,
+                text: 'Play',
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          buildElevatedButton(
+            icon: Icons.upload_file,
+            iconColor: Colors.black,
+            f: () => {
+              setState(() {
+                _futureAlbum =
+                    createAlbum(widget.username, widget.appID, filePath);
+              })
+            },
+            text: 'Upload',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<Verification> _uploadAudio(
+      String username, String appID, String filePath) async {
+    File file = File(filePath);
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse("http://localhost:8000/api/login-voice-auth"),
+    );
+    Map<String, String> headers = {"Content-type": "multipart/form-data"};
+    request.files.add(http.MultipartFile.fromBytes(
+        'voice_image', file.readAsBytesSync(),
+        filename: filePath.split("/").last));
+    request.headers.addAll(headers);
+    request.fields.addAll({"app_id": appID, "username": username});
+    // print("request: " + request.toString());
+    var res = await request.send();
+    var response = await http.Response.fromStream(res);
+    print("This is response:" + response.body);
+    // return res.statusCode;
+    if (response.statusCode == 500 || response.statusCode == 400) {
+      throw Exception('Post Request failed');
+    } else {
+      return Verification.fromJson(jsonDecode(response.body));
+    }
   }
 
   Future<Verification> createAlbum(
