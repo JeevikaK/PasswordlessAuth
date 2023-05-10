@@ -9,6 +9,7 @@ from .voice_utils import *
 from .face_utils import *
 from .liveliness_util import *
 from .fido_utils import *
+from .ecg_utils import *
 from django.core.files import File
 from .crypt import *
 import os
@@ -719,3 +720,36 @@ class Voice_auth_Rereg(APIView):
                 return Response({"verified": False})
         except User.DoesNotExist:
             return Response({"status": "NotExists"})
+
+
+class ECG_auth_Login(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        username = request.data.get("username")
+        ecg_image = request.data.get("ecg_image")
+        app_id = request.data.get("app_id")
+        print(ecg_image.name.split('.')[0])
+        try:
+            user = User.objects.get(username=username)
+            app = Applications.objects.get(app_id=app_id)
+            if user.voice_auth:
+                user_ob = UserSerializer(user)
+                if verify_wave(ecg_image, username):
+                    code, nonce_len = generate_code(user.token, app.public_key)
+                    return Response(
+                        {
+                            "verified": True,
+                            **user_ob.data,
+                            "code": code,
+                            "nonce_len": nonce_len,
+                            "redirect_url": app.redirection_url,
+                        }
+                    )
+                else:
+                    return Response({"verified": False})
+            else:
+                return Response({"verified": False})
+        except User.DoesNotExist:
+            return Response({"status": "NotExists"})
+

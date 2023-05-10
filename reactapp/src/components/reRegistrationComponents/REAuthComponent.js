@@ -163,9 +163,17 @@ const REAuthComponent = ({type}) => {
     return (
         <>
         <div className="h-screen bg-black overflow-auto">
+            <div className="box">
+                <div className="mdl">
+                    <div className="circles">
+                    <div className="circle circle-1"></div>
+                    <div className="circle circle-2"></div>
+                    </div>  
+                </div>
+            </div>
             <AppNameComponent />
-            <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-                <div className="w-full bg-gray-800 rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+            <div className="flex relative flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+                <div className="w-full absolute top-28  bg-zinc-800 rounded-lg opacity-90 shadow dark:border sm:max-w-md xl:p-0 dark:bg-zinc-800 dark:border-zinc-700">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-5">
                         {type === 'pre-auth' && <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-400 md:text-2xl dark:text-white">
                             Login into your account first!

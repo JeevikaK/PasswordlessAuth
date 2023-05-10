@@ -19,6 +19,7 @@ import Fido from './routes/FidoRoute';
 import Fido_reReg from './routes/reRegistrationRoutes/Fido_reReg';
 import Fido_postReg from './routes/reRegistrationRoutes/Fido_postReg';
 import Fido_Recovery from './routes/recoveryRoutes/RecoveryFido';
+import ECG from './routes/ECGRoute';
 
 class App extends React.Component {
   render(){
@@ -38,6 +39,7 @@ class App extends React.Component {
           <Route path=':id/:state/voice' element={<VoiceRecord/>}></Route>
           <Route path=':id/:state/inapp' element={<QrCodeComponent />}></Route>
           <Route path=':id/:state/fido' element={<Fido/>}></Route>
+          <Route path=':id/:state/ecg-auth' element={<ECG/>}></Route>
           <Route path=':id/signup/video' element={<VideoRecord />}></Route>
           <Route path=':id/login/video' element={<VideoLoginRoute />}></Route>
           <Route path=':id/recover/voice/:token' element={<VoiceRecord_Recovery/>}></Route>

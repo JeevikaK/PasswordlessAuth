@@ -23,6 +23,12 @@ Install Requirements
     pip install -r requirements.txt
 ```
 
+Install ffpeg software from the link below, unzip it and install and then add it to path variables.
+(A restart maybe required)
+```bash
+    https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z
+```
+
 Run the server
 ```bash
     cd server

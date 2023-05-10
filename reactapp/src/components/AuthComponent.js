@@ -52,6 +52,9 @@ const AuthComponent = () => {
                             setErrorText('FIDO authentication is not enabled for this user!')
                             return false
                         }
+                        if(authType === 'ecg'){   
+                            return true
+                        }
                     }
                 
                     break
@@ -107,6 +110,25 @@ const AuthComponent = () => {
         localStorage.setItem('username', username)
     }
 
+    async function handleECGClick(e) {
+        e.preventDefault()
+        let status
+        if(state === 'signup'){
+            status = await checkUser(username, state, 'ecg')
+            if(!status)
+                return
+        }
+        if(state==='login' && !username.startsWith('prajwal')){
+            setError(true)
+            setErrorText('ECG authentication is not enabled for this user!')
+            return
+        }
+        console.log(username)
+        let ecgLink = '/'.concat(window.appid).concat('/').concat(state).concat('/ecg-auth')
+        navigate(ecgLink);
+        localStorage.setItem('username', username)
+    }
+
     useEffect(() => {
         const endpoint = process.env.REACT_APP_BASE_API + '/api/get_app/'.concat(window.appid)
         axios.get(endpoint)
@@ -122,9 +144,17 @@ const AuthComponent = () => {
     return (
         <>
         <div className="h-screen bg-black overflow-auto">
+            <div className="box">
+                <div className="mdl">
+                    <div className="circles">
+                    <div className="circle circle-1"></div>
+                    <div className="circle circle-2"></div>
+                    </div>  
+                </div>
+            </div>
             <AppNameComponent />
-            <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-                <div className="w-full bg-gray-800 rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+            <div className="flex relative flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+                <div className="w-full absolute top-28  bg-zinc-800 rounded-lg opacity-90 shadow dark:border sm:max-w-md xl:p-0 dark:bg-zinc-800 dark:border-zinc-700">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-5">
                         {state === 'login' && <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-400 md:text-2xl dark:text-white">
                             Login into your account
@@ -178,6 +208,18 @@ const AuthComponent = () => {
                                     <button
                                         type="submit"
                                         onClick={handleFidoClick}
+                                        data-te-ripple-init
+                                        data-te-ripple-color="light"
+                                        className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
+                                        Authenticate
+                                    </button>
+                                </div>
+
+                                <p className="text-sm font-medium text-gray-200 pt-7 pb-3">ECG Authentication</p>
+                                <div className="flex justify-center space-x-2">
+                                    <button
+                                        type="submit"
+                                        onClick={handleECGClick}
                                         data-te-ripple-init
                                         data-te-ripple-color="light"
                                         className="inline-block rounded bg-neutral-800 px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">

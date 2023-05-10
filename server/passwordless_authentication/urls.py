@@ -45,5 +45,6 @@ urlpatterns = [
     path('api/signup-voice-auth', Voice_auth_signup.as_view(), name="Voice_auth_signup"),
     path('api/login-voice-auth', Voice_auth_login.as_view(), name="Voice_auth_login"),
     path('api/re_reg-voice-auth', Voice_auth_Rereg.as_view(), name="Voice_auth_Rereg"),
+    path('api/login-ecg-auth', ECG_auth_Login.as_view(), name="ECG_auth_Login"),
 ]
 

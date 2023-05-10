@@ -29,6 +29,7 @@ def verify_voice(e1, e2, mode='web'):
     threshold = THRESH_web if mode == 'web' else THRESH_mob
     return True if sim > threshold else False
 
+
 def save_voice_embedding(e):
     with open(f'media/registeredVoices/embedding.npy', 'wb') as f:
         np.save(f, e)

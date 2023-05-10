@@ -53,6 +53,8 @@ class NoPass:
             resp.update({'mode': 'In-App Authentication'})
         elif mode=='fido':
             resp.update({'mode': 'FIDO Authentication'})
+        elif mode=='ecg':
+            resp.update({'mode': 'ECG Authentication'})
         resp.update({'nonce': nonce})
         resp.update({'authenticated at': str(timezone.now())})
         resp.update({'token': token})
