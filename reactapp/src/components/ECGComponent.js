@@ -94,13 +94,13 @@ const ECGComponent = () => {
     setErrorMessage('')
     setError(false)
     console.log(filename)
-    if (filename == 'owais.png') {
+    if (filename.startsWith('owais')) {
       setUploaded(true)
-      setCurrent(filename)
+      setCurrent(filename.split('.')[0]+'.png')
     }
-    else if (filename == 'prajwal.png') {
+    else if (filename.startsWith('prajwal')) {
       setUploaded(true)
-      setCurrent(filename)
+      setCurrent(filename.split('.')[0]+'.png')
     }
     else {
       setUploaded(false)
