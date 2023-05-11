@@ -148,6 +148,10 @@ Run the ``sampleapp``
 - Web - ReatJS (HTML, CSS, JS)
 - App - Flutter (Dart)
 
+#### Hardware 
+- Nodemcu ESP8266
+- AD8232 ECG Monitor sensor
+
 #### Other Softwares 
 - ffmpeg
 
