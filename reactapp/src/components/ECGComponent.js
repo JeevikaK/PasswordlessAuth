@@ -89,18 +89,21 @@ const ECGComponent = () => {
   }
 
   const uploadECG = async (e) => {
+    const t_usr = 'prajwal'
+    const f_usr = 'owais'
+    const ext = '.png'
     setSignal(e.target.files[0])
     const filename = e.target.files[0].name
     setErrorMessage('')
     setError(false)
     console.log(filename)
-    if (filename.startsWith('owais')) {
+    if (filename.startsWith(f_usr)) {
       setUploaded(true)
-      setCurrent(filename.split('.')[0]+'.png')
+      setCurrent(f_usr+ext)
     }
-    else if (filename.startsWith('prajwal')) {
+    else if (filename.startsWith(t_usr)) {
       setUploaded(true)
-      setCurrent(filename.split('.')[0]+'.png')
+      setCurrent(t_usr+ext)
     }
     else {
       setUploaded(false)
@@ -132,7 +135,7 @@ const ECGComponent = () => {
             {state === 'login' && <>
               <div className='p-4 pt-0 border'>
                 <h2 className='font-regular leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 pb-4 text-xl '>{localStorage.getItem('username')}'s ECG wave</h2>
-                <img src={process.env.REACT_APP_URL + "/images/prajwal.png"} />
+                <img src={process.env.REACT_APP_URL + "/images/prajwal1.png"} />
               </div>
               {!uploaded &&
                 <div className='bg-white p-4 rounded-md m-4'>
