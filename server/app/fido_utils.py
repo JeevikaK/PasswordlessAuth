@@ -17,8 +17,8 @@ from .models import *
 import json
 
 
-rp_id = "localhost"
-origin = "http://localhost:3000"
+rp_id = "nopass-64cee.web.app"
+origin = "https://nopass-64cee.web.app"
 rp_name = "Passwordless Authentication"
 
 current_registration_challenge = {}

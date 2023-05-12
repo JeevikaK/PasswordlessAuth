@@ -29,7 +29,7 @@ def store_ecg_embedding(img):
 
 def verify_wave(ecg_image, username):
     embedding = load_ecg_embedding(username)
-    anchor_embedding = load_ecg_embedding_anchor(ecg_image.name.split('.')[0])
+    anchor_embedding = load_ecg_embedding_anchor(ecg_image.name.split('.')[0].split('-')[0])
     prob = model.predict([embedding, anchor_embedding])
     pred = (prob > 0.5)[0][0]
     if pred:

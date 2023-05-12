@@ -4,7 +4,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import AppNameComponent from './AppNameComponent';
 import axios from 'axios'
 import RecoveryComponent from './recoveryComponent';
-import { w3cwebsocket as W3CWebSocket} from "websocket";
+import { w3cwebsocket as W3CWebSocket } from "websocket";
 
 const CustomAlert = () => {
   const [id, setId] = useState('')
@@ -28,7 +28,7 @@ const CustomAlert = () => {
       .then((res) => {
         setUserMail(res.data.recovery_email)
         // console.log(res.data.inapp_auth)
-        if((state=='signup' && res.data.userExists) || (state=='login' && !res.data.inapp_auth)){
+        if ((state == 'signup' && res.data.userExists) || (state == 'login' && !res.data.inapp_auth)) {
           navigate('/'.concat(window.appid).concat('/signup'))
         }
       })
@@ -43,9 +43,9 @@ const CustomAlert = () => {
       .catch((err) => console.log(err))
   }, [])
 
-  const handleButtonClick = async() => {
-    // let channel_id = Math.floor(Date.now()+Math.random())
-    let channel_id = '1681415300217'
+  const handleButtonClick = async () => {
+    let channel_id = Math.floor(Date.now() + Math.random())
+    // let channel_id = '1681415300217'
     // console.log(id)
     console.log(channel_id)
     let info = 'INAPP:'.concat(recMail) + ':'.concat(channel_id).concat(':').concat(window.appid).concat(':').concat(localStorage.getItem('username')).concat(':').concat(state).concat(':inapp')
@@ -72,17 +72,6 @@ const CustomAlert = () => {
       }
     };
   };
-
-  // const testSocket = () => {
-  //   console.log('test')
-  //   window.connection.send(JSON.stringify({
-  //     'type': 'chat_message',
-  //     'message': {
-  //       'name': 'test',
-  //       'message': 'test'
-  //     }
-  //   }));
-  // }
 
   const handleAlertClose = () => {
     window.connection.close()
@@ -126,66 +115,66 @@ const CustomAlert = () => {
   return (
     <div className='h-screen bg-black overflow-auto'>
       <div className="box">
-          <div className="mdl">
-              <div className="circles">
-              <div className="circle circle-1"></div>
-              <div className="circle circle-2"></div>
-            </div>  
+        <div className="mdl">
+          <div className="circles">
+            <div className="circle circle-1"></div>
+            <div className="circle circle-2"></div>
           </div>
+        </div>
       </div>
       <AppNameComponent />
       {state === 'login' && <p className='fixed top-12 font-bold leading-tight tracking-tight text-gray-400 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>{id}</p>}
       {localStorage.getItem('username') && <p className='fixed top-20 font-bold leading-tight tracking-tight text-gray-400 mb-8 pr-4 pt-4 pl-4 md:text-xl dark:text-white'>Username : {localStorage.getItem('username')}</p>}
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
         <div className=" mt-[10em] bg-zinc-800 opacity-90  dark:bg-zinc-800 dark:border-zinc-700 px-10 py-6 mb-2 rounded-lg shadow dark:border sm:max-w-md flex flex-col justify-center items-center">
-        <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 text-center pt-4 pl-4 pb-4 md:text-3xl dark:text-white'>In-App Authentication</h1>
-        {state === 'signup' && <button type='button'
+          <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-400 pr-4 text-center pt-4 pl-4 pb-4 md:text-3xl dark:text-white'>In-App Authentication</h1>
+          {state === 'signup' && <button type='button'
             onClick={handleButtonClick}
             data-te-ripple-init
             data-te-ripple-color="light"
             className="inline-block rounded  px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
             Register
-        </button>}
-        {state === 'login' && <button type='button'
+          </button>}
+          {state === 'login' && <button type='button'
             onClick={handleButtonClick}
             data-te-ripple-init
             data-te-ripple-color="light"
             className="inline-block rounded px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
             Verify
-        </button>}
-      {showAlert && (
-        <div>
-          <p className='font-bold text-slate-200 mb-3 text-center'>Scan QR Code through app to authenticate</p>
-          <div className='flex justify-center border-8'>{qrcode}</div>
-          <p className='text-sm leading-tight tracking-tight text-slate-200 mt-3 text-center'>Do not close the QR Code until authenticated</p>
-          {/* <button type='button' onClick={testSocket}>Test me!</button> */}
-          <div className='flex justify-center'>
-            <button type='button'
-                onClick={handleAlertClose}
-                data-te-ripple-init
-                data-te-ripple-color="light"
-                className="inline-block rounded  px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
-                Close
-            </button>
-          </div>
-        </div>
-      )}
+          </button>}
+          {showAlert && (
+            <div>
+              <p className='font-bold text-slate-200 mb-3 text-center'>Scan QR Code through app to authenticate</p>
+              <div className='flex justify-center border-8'>{qrcode}</div>
+              <p className='text-sm leading-tight tracking-tight text-slate-200 mt-3 text-center'>Do not close the QR Code until authenticated</p>
+              {/* <button type='button' onClick={testSocket}>Test me!</button> */}
+              <div className='flex justify-center'>
+                <button type='button'
+                  onClick={handleAlertClose}
+                  data-te-ripple-init
+                  data-te-ripple-color="light"
+                  className="inline-block rounded  px-6 pt-2.5 pb-2 mt-6 mb-4 text-xs font-medium uppercase leading-normal text-gray-200 shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)">
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
 
-      {userMail != '' && state === 'login' &&  <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
-          Recover your account using email? 
-          <br></br>
-          {!sendingMail && <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>}
-          <br />
-          {sendingMail && <span>Sending...</span>}
-          <br/>
-          <span id='magicNotif' hidden={true}>Magic Link sent!</span>
+          {userMail != '' && state === 'login' && <p className="text-sm text-center my-6 font-light text-gray-200 dark:text-gray-400" >
+            Recover your account using email?
+            <br></br>
+            {!sendingMail && <a href='' onClick={sendRecMail} className="font-medium text-primary-600 hover:underline cursor-pointer dark:text-primary-500">{userMail}</a>}
+            <br />
+            {sendingMail && <span>Sending...</span>}
+            <br />
+            <span id='magicNotif' hidden={true}>Magic Link sent!</span>
           </p>}
-      </div>
+        </div>
       </div>
       <div className='mt-10'>
         <RecoveryComponent setRecMail={setRecMail} submission={handleSubmit} />
       </div>
-     
+
     </div>
   );
 };

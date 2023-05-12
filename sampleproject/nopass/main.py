@@ -4,7 +4,7 @@ import rsa
 import base64
 from django.utils import timezone
 
-BASE_URL_CLIENT = 'http://localhost:3000'
+BASE_URL_CLIENT = 'https://nopass-64cee.web.app'
 BASE_URL_SERVER = 'http://localhost:8000'
 
 class NoPass:
